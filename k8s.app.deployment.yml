@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: absen-go-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      name: absen-go-app
+  template:
+    metadata:
+      labels:
+        name: absen-go-app
+    spec:
+      containers:
+      - name: application
+        image: emixbal/absen-go:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 3000
+        env:
+          - name: DB_USER
+            value: "root"
+          - name: DB_PASSWORD
+            value: "root"
+          - name: DB_PORT
+            value: "3306"
+          - name: DB_HOST
+            value: "absen-go-mysql"
+          - name: DB_NAME
+            value: "sejutacita_api"
