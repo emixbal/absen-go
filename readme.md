@@ -1,4 +1,4 @@
-## Wedus App
+## Absen App
 
 Rest API CRUD User dan User Login, dengan JWT token/refreshToken
 
