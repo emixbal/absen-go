@@ -9,8 +9,14 @@ import (
 func InitMigration(db *gorm.DB) {
 	db.AutoMigrate(
 		&models.User{},
-		//new approach//
-
+		&models.Teacher{},
+		&models.AcademicYear{},
+		&models.Semester{},
+		&models.Class{},
+		&models.Student{},
+		&models.Extracurricular{},
+		&models.ClassAttendance{},
+		&models.ExtracurricularAttendance{},
 	)
 
 	// init seeding
