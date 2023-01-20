@@ -16,7 +16,4 @@ func Init(app *fiber.App) {
 	Book(app)
 	User(app)
 	Auth(app)
-	Kambing(app)
-	Feed(app)
-	Medicine(app)
 }
