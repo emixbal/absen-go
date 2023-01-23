@@ -1,11 +1,7 @@
 package models
 
-import (
-	"gorm.io/gorm"
-)
-
 type Extracurricular struct {
-	gorm.Model
+	MyGorm
 	Name       string   `json:"name" gorm:"size:50"`
 	Teacher    Teacher  `gorm:"constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT;"`
 	TeacherID  int      `json:"teacher_id"`

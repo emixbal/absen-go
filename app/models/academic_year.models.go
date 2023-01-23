@@ -1,10 +1,6 @@
 package models
 
-import (
-	"gorm.io/gorm"
-)
-
 type AcademicYear struct {
-	gorm.Model
+	MyGorm
 	Name string `json:"name" gorm:"size:50"`
 }

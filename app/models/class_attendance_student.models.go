@@ -2,12 +2,10 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type ClassAttendanceStudent struct {
-	gorm.Model
+	MyGorm
 	Datang            time.Time       `json:"datang" `
 	Pulang            time.Time       `json:"pulang" `
 	ClassAttendance   ClassAttendance `gorm:"constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT;"`

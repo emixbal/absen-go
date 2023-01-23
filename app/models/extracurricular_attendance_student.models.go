@@ -2,12 +2,10 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type ExtracurricularAttendanceStudent struct {
-	gorm.Model
+	MyGorm
 	Datang                      time.Time                 `json:"datang" `
 	Pulang                      time.Time                 `json:"pulang" `
 	ExtracurricularAttendance   ExtracurricularAttendance `gorm:"constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT;"`

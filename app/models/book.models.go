@@ -4,12 +4,10 @@ import (
 	"absen-go/config"
 	"fmt"
 	"net/http"
-
-	"gorm.io/gorm"
 )
 
 type Book struct {
-	gorm.Model
+	MyGorm
 	Author string `json:"author"`
 	Name   string `json:"name"`
 	NoISBN string `json:"no_isbn"`

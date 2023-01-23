@@ -10,7 +10,7 @@ import (
 )
 
 type User struct {
-	gorm.Model
+	MyGorm
 	Name     string `json:"name"`
 	IsAdmin  bool   `json:"is_admin,omitempty" gorm:"default:false"`
 	IsActive bool   `json:"is_active,omitempty" gorm:"default:true"`
