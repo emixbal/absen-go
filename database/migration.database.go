@@ -15,8 +15,11 @@ func InitMigration(db *gorm.DB) {
 		&models.Class{},
 		&models.Student{},
 		&models.Extracurricular{},
+		&models.ExtracurricularClass{},
 		&models.ClassAttendance{},
 		&models.ExtracurricularAttendance{},
+		&models.ExtracurricularAttendanceStudent{},
+		&models.ClassAttendanceStudent{},
 	)
 
 	// init seeding
