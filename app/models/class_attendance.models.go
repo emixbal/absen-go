@@ -6,11 +6,11 @@ import (
 
 type ClassAttendance struct {
 	MyGorm
-	Date       time.Time `json:"date" `
+	Date       time.Time `json:"date" gorm:"type:date(3)"`
 	Class      Class     `gorm:"constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT;"`
 	ClassID    uint      `json:"class_id"`
 	Semester   Semester  `gorm:"constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT;"`
 	SemesterID uint      `json:"semester_id"`
-	StartTime  time.Time `gorm:"type:time(3)" json:"start_time,omitempty"`
-	EndTime    time.Time `gorm:"type:time(3)" json:"end_time,omitempty"`
+	StartTime  string    `gorm:"type:time(3)" json:"start_time,omitempty"`
+	EndTime    string    `gorm:"type:time(3)" json:"end_time,omitempty"`
 }

@@ -3,8 +3,7 @@ package requests
 import "github.com/gookit/validate"
 
 type AddClassAttendanceStudent struct {
-	StudentID         int `json:"student_id" xml:"student_id" form:"student_id" validate:"required"`
-	ClassAttendanceID int `json:"class_attendance_id" xml:"class_attendance_id" form:"class_attendance_id" validate:"required"`
+	StudentID int `json:"student_id" xml:"student_id" form:"student_id" validate:"required"`
 }
 
 // Messages you can custom validator error messages.
@@ -17,7 +16,6 @@ func (f AddClassAttendanceStudent) Messages() map[string]string {
 // Translates you can custom field translates.
 func (f AddClassAttendanceStudent) Translates() map[string]string {
 	return validate.MS{
-		"StudentID":         "student_id",
-		"ClassAttendanceID": "class_attendance_id",
+		"StudentID": "student_id",
 	}
 }

@@ -30,6 +30,6 @@ func AddClassAttendanceStudent(c *fiber.Ctx) error {
 		return c.Status(res.Status).JSON(res)
 	}
 
-	result, _ := models.AddClassAttendanceStudent(p.ClassAttendanceID, p.StudentID)
+	result, _ := models.AddClassAttendanceStudent(p.StudentID)
 	return c.Status(result.Status).JSON(result)
 }

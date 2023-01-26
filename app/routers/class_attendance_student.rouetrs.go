@@ -6,8 +6,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func ClassAttendanceStudent(app *fiber.App) {
-	r := app.Group("/class-attendance-student")
+func ClassAttendance(app *fiber.App) {
+	r := app.Group("/class-attendance")
 
 	r.Post("/", controllers.AddClassAttendanceStudent)
 }
