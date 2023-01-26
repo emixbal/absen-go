@@ -20,12 +20,77 @@ type ClassAttendanceStudent struct {
 	Leave             time.Time       `json:"leave" gorm:"default:null"`
 }
 
-func AddClassAttendanceStudent(student_id int) (Response, error) {
+func ClassAttendanceStudentArrive(student_id int) (Response, error) {
 	var res Response
 	var student Student
 	var class_attendance ClassAttendance
 	var cas ClassAttendanceStudent
-	var is_cas_exist = true // membedakan tap untuk datang atau pulang. Tap 1st untuk datang, selanjutnya dianggap pulang.
+	var time_now = time.Now()
+
+	db := config.GetDBInstance()
+
+	// cek apakah student exist
+	if result := db.Preload("Class").Where("id = ?", student_id).First(&student); result.Error != nil {
+		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
+			res.Status = http.StatusBadRequest
+			res.Message = "student not found."
+			return res, nil
+		}
+	}
+
+	// cek apakah ada jadwal kelas hari ini
+	today := time.Now().UTC().Format("2006-01-02")
+	if result := db.
+		Where("class_id = ?", student.ClassID).
+		Where("date = ?", today).
+		First(&class_attendance); result.Error != nil {
+		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
+			res.Status = http.StatusBadRequest
+			res.Message = "class not found."
+			return res, nil
+		}
+	}
+
+	if result := db.
+		Where("class_attendance_id = ?", class_attendance.ID).
+		Where("student_id = ?", student.ID).
+		First(&ClassAttendanceStudent{}); result.Error != nil {
+		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
+			/**
+			Jika belum absen, register simpan absen baru hari ini
+			*/
+			cas.ClassAttendanceID = int(class_attendance.ID)
+			cas.StudentID = int(student.ID)
+			cas.Arrive = time_now
+			if result := db.Create(&cas); result.Error != nil {
+				log.Println("error Create AddClassAttendanceStudent")
+				log.Println(result.Error)
+
+				res.Status = http.StatusInternalServerError
+				res.Message = "error save arrive"
+				return res, result.Error
+			}
+
+			res.Status = http.StatusOK
+			res.Message = "ok"
+			return res, nil
+		}
+	}
+
+	/**
+	Jika sudah absen
+	*/
+	res.Status = http.StatusBadRequest
+	res.Message = "sudah absen"
+	return res, nil
+
+}
+
+func ClassAttendanceStudentLeave(student_id int) (Response, error) {
+	var res Response
+	var student Student
+	var class_attendance ClassAttendance
+	var cas ClassAttendanceStudent
 
 	db := config.GetDBInstance()
 
@@ -50,35 +115,25 @@ func AddClassAttendanceStudent(student_id int) (Response, error) {
 		}
 	}
 
-	if result := db.Where("class_attendance_id = ?", class_attendance.ID).Where("student_id = ?", student.ID).First(&cas); result.Error != nil {
+	if result := db.
+		Where("class_attendance_id = ?", class_attendance.ID).
+		Where("student_id = ?", student.ID).
+		First(&cas); result.Error != nil {
 		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
-			is_cas_exist = false
+			res.Status = http.StatusBadRequest
+			res.Message = "Belum absen masuk."
+			return res, nil
 		}
 	}
 
-	if !is_cas_exist { // tap pertama (tiba)
-		cas.ClassAttendanceID = int(class_attendance.ID)
-		cas.StudentID = int(student.ID)
-		cas.Arrive = time.Now()
+	cas.Leave = time.Now()
+	if result := db.Save(&cas); result.Error != nil {
+		log.Println("error Update ClassAttendanceStudentLeave")
+		log.Println(result.Error)
 
-		if result := db.Create(&cas); result.Error != nil {
-			log.Println("error Create AddClassAttendanceStudent")
-			log.Println(result.Error)
-
-			res.Status = http.StatusInternalServerError
-			res.Message = "error save arrive"
-			return res, result.Error
-		}
-	} else { // tap selanjutnya (meninggalkan)
-		cas.Leave = time.Now()
-		if result := db.Save(&cas); result.Error != nil {
-			log.Println("error Update AddClassAttendanceStudent")
-			log.Println(result.Error)
-
-			res.Status = http.StatusInternalServerError
-			res.Message = "error update leave"
-			return res, result.Error
-		}
+		res.Status = http.StatusInternalServerError
+		res.Message = "error update leave"
+		return res, result.Error
 	}
 
 	res.Status = http.StatusOK

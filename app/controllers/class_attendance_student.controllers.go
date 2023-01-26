@@ -10,7 +10,7 @@ import (
 	"github.com/gookit/validate"
 )
 
-func AddClassAttendanceStudent(c *fiber.Ctx) error {
+func ClassAttendanceStudentArrive(c *fiber.Ctx) error {
 	var res models.Response
 
 	p := new(requests.AddClassAttendanceStudent)
@@ -30,6 +30,30 @@ func AddClassAttendanceStudent(c *fiber.Ctx) error {
 		return c.Status(res.Status).JSON(res)
 	}
 
-	result, _ := models.AddClassAttendanceStudent(p.StudentID)
+	result, _ := models.ClassAttendanceStudentArrive(p.StudentID)
+	return c.Status(result.Status).JSON(result)
+}
+
+func ClassAttendanceStudentLeave(c *fiber.Ctx) error {
+	var res models.Response
+
+	p := new(requests.AddClassAttendanceStudent)
+	if err := c.BodyParser(p); err != nil {
+		log.Println(err)
+		res.Status = http.StatusBadRequest
+		res.Message = "Empty payloads"
+
+		return c.Status(res.Status).JSON(res)
+	}
+
+	v := validate.Struct(p)
+	if !v.Validate() {
+		res.Status = http.StatusBadRequest
+		res.Message = v.Errors.One()
+
+		return c.Status(res.Status).JSON(res)
+	}
+
+	result, _ := models.ClassAttendanceStudentLeave(p.StudentID)
 	return c.Status(result.Status).JSON(result)
 }
