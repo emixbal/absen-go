@@ -1,9 +1,6 @@
 package models
 
 import (
-	"absen-go/config"
-	"log"
-	"net/http"
 	"time"
 )
 
@@ -17,22 +14,8 @@ type ExtracurricularAttendanceStudent struct {
 	Leave                       time.Time                 `json:"leave" `
 }
 
-func AddExtracurricularAttendanceStudent(book *Book) (Response, error) {
+func AddExtracurricularAttendanceStudent() (Response, error) {
 	var res Response
-	db := config.GetDBInstance()
-
-	if result := db.Create(&book); result.Error != nil {
-		log.Println("error AddExtracurricularAttendanceStudent")
-		log.Println(result.Error)
-
-		res.Status = http.StatusInternalServerError
-		res.Message = "error save new record"
-		return res, result.Error
-	}
-
-	res.Status = http.StatusOK
-	res.Message = "success"
-	res.Data = book
 
 	return res, nil
 }

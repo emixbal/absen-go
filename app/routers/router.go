@@ -13,7 +13,6 @@ func Init(app *fiber.App) {
 	})
 
 	//palece new routers below
-	Book(app)
 	User(app)
 	Auth(app)
 	ClassAttendance(app)
