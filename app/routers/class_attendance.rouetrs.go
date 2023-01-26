@@ -9,5 +9,5 @@ import (
 func ClassAttendance(app *fiber.App) {
 	r := app.Group("/class-attendance")
 
-	r.Post("/", controllers.AddClassAttendanceStudent)
+	r.Post("/arrive", controllers.AddClassAttendanceStudent)
 }
