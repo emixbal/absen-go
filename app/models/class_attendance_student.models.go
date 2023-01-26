@@ -20,7 +20,7 @@ type ClassAttendanceStudent struct {
 	Leave             time.Time       `json:"leave" gorm:"default:null"`
 }
 
-func ClassAttendanceStudentArrive(student_id int) (Response, error) {
+func ClassAttendanceStudentArrive(student_id string) (Response, error) {
 	var res Response
 	var student Student
 	var class_attendance ClassAttendance
@@ -86,7 +86,7 @@ func ClassAttendanceStudentArrive(student_id int) (Response, error) {
 
 }
 
-func ClassAttendanceStudentLeave(student_id int) (Response, error) {
+func ClassAttendanceStudentLeave(student_id string) (Response, error) {
 	var res Response
 	var student Student
 	var class_attendance ClassAttendance

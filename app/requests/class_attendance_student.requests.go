@@ -3,7 +3,7 @@ package requests
 import "github.com/gookit/validate"
 
 type AddClassAttendanceStudent struct {
-	StudentID int `json:"student_id" xml:"student_id" form:"student_id" validate:"required"`
+	StudentID string `json:"student_id" xml:"student_id" form:"student_id" validate:"required"`
 }
 
 // Messages you can custom validator error messages.
