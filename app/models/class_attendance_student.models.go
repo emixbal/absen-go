@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
 
@@ -73,6 +74,12 @@ func ClassAttendanceStudentArrive(student_id string) (Response, error) {
 
 			res.Status = http.StatusOK
 			res.Message = "ok"
+			res.Data = fiber.Map{
+				"student_name": student.Name,
+				"nisn":         student.NISN,
+				"class":        student.Class.Name,
+				"time_arrival": time_now.Format("15:04:05"),
+			}
 			return res, nil
 		}
 	}
