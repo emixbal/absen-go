@@ -98,6 +98,7 @@ func ClassAttendanceStudentLeave(student_id string) (Response, error) {
 	var student Student
 	var class_attendance ClassAttendance
 	var cas ClassAttendanceStudent
+	var time_now = time.Now()
 
 	db := config.GetDBInstance()
 
@@ -133,7 +134,7 @@ func ClassAttendanceStudentLeave(student_id string) (Response, error) {
 		}
 	}
 
-	cas.Leave = time.Now()
+	cas.Leave = time_now
 	if result := db.Save(&cas); result.Error != nil {
 		log.Println("error Update ClassAttendanceStudentLeave")
 		log.Println(result.Error)
@@ -145,5 +146,11 @@ func ClassAttendanceStudentLeave(student_id string) (Response, error) {
 
 	res.Status = http.StatusOK
 	res.Message = "ok"
+	res.Data = fiber.Map{
+		"student_name": student.Name,
+		"nisn":         student.NISN,
+		"class":        student.Class.Name,
+		"time_leaving": time_now.Format("15:04:05"),
+	}
 	return res, nil
 }
