@@ -20,7 +20,7 @@ import (
 
 var refreshSecret = []byte(os.Getenv("REFRESH_SECRET"))
 
-func LoginRefrehToken(c *fiber.Ctx) error {
+func LoginWithRefrehToken(c *fiber.Ctx) error {
 	var userClaim models.UserClaim
 
 	p := new(requests.LoginForm)
@@ -33,37 +33,32 @@ func LoginRefrehToken(c *fiber.Ctx) error {
 			"message": v.Errors.One(),
 		})
 	}
-	u := new(models.User)
+	user := new(models.User)
 
 	db := config.GetDBInstance()
 
-	if res := db.Where("email = ?", p.Email).First(&u); res.RowsAffected <= 0 {
+	if res := db.Preload("Role").Where("email = ?", p.Email).First(&user); res.RowsAffected <= 0 {
 		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 			"error":   true,
 			"message": "Invalid Email!",
 		})
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(p.Password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(p.Password)); err != nil {
 		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 			"error":   true,
 			"message": "Password is incorrect!",
 		})
 	}
 	userClaim.Issuer = utils.UUIDv4()
-	userClaim.Id = int(u.ID)
-	userClaim.Email = u.Email
-	userClaim.IsAdmin = u.IsAdmin
+	userClaim.Id = int(user.ID)
+	userClaim.Email = user.Email
+	userClaim.Role = user.Role.Name
 	accessToken, refreshToken := models.GenerateTokens(&userClaim, false)
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"access_token":  accessToken,
 		"refresh_token": refreshToken,
-		"user": fiber.Map{
-			"id":       u.ID,
-			"email":    u.Email,
-			"is_admin": u.IsAdmin,
-		},
 	})
 }
 
@@ -99,9 +94,9 @@ func RefreshToken(c *fiber.Ctx) error {
 	userClaim.Id = user_id_int
 	userClaim.Email = fmt.Sprintf("%v", claims["email"])
 	if claims["is_admin"] == true {
-		userClaim.IsAdmin = true
+		// userClaim.IsAdmin = true
 	} else {
-		userClaim.IsAdmin = false
+		// userClaim.IsAdmin = false
 	}
 
 	// if fail refresh token
@@ -128,10 +123,5 @@ func RefreshToken(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"access_token":  accessToken,
 		"refresh_token": refreshToken,
-		"user": fiber.Map{
-			"id":       userClaim.Id,
-			"email":    userClaim.Email,
-			"is_admin": userClaim.IsAdmin,
-		},
 	})
 }

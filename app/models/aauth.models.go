@@ -37,7 +37,7 @@ func CheckLogin(email, passwordTxt string) (isExist bool, isMatch bool, tokenStr
 	var user User
 	db := config.GetDBInstance()
 
-	if result := db.Where(&User{Email: email}).First(&user); result.Error != nil {
+	if result := db.Preload("Role").Where(&User{Email: email}).First(&user); result.Error != nil {
 		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
 			return false, false, "", user, result.Error
 		}
@@ -54,7 +54,7 @@ func CheckLogin(email, passwordTxt string) (isExist bool, isMatch bool, tokenStr
 	claims := jwt.MapClaims{
 		"email":    email,
 		"user_id":  user.ID,
-		"is_admin": user.IsAdmin,
+		"is_admin": user.Role.Name,
 		"exp":      time.Now().Add(time.Minute * 15).Unix(),
 		"iat":      time.Now().Unix(),
 	}
