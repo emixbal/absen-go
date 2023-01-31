@@ -16,7 +16,7 @@ func SeederUser(db *gorm.DB) {
 			Name:     "muhammad iqbal",
 			Email:    "emixbal@gmail.com",
 			Password: "$2a$10$xO0eiq3.64vo1gR1cKkEE.hwn0OvafrzVI0HhsZWeb9UuXsl7bZrq", //aaaaaaaa
-			IsAdmin:  true,
+			RoleID:   1,
 		},
 	}
 
