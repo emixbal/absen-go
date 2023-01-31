@@ -8,6 +8,7 @@ import (
 
 func InitMigration(db *gorm.DB) {
 	db.AutoMigrate(
+		&models.Role{},
 		&models.User{},
 		&models.Teacher{},
 		&models.AcademicYear{},
@@ -23,5 +24,6 @@ func InitMigration(db *gorm.DB) {
 	)
 
 	// init seeding
+	SeederRole(db)
 	SeederUser(db)
 }
