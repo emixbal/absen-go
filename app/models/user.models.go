@@ -12,10 +12,11 @@ import (
 type User struct {
 	MyGorm
 	Name     string `json:"name"`
-	IsAdmin  bool   `json:"is_admin,omitempty" gorm:"default:false"`
 	IsActive bool   `json:"is_active,omitempty" gorm:"default:true"`
 	Email    string `json:"email" gorm:"index:idx_name,unique"`
 	Password string `json:"-"`
+	Role     Role   `gorm:"constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT;"`
+	RoleID   int    `json:"role_id"`
 }
 
 func FethAllUsers(limit, offset int) (Response, error) {
