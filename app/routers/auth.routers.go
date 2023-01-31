@@ -10,12 +10,9 @@ import (
 func Auth(app *fiber.App) {
 	r := app.Group("/auth")
 
-	r.Post("/login", controllers.LoginRefrehToken)
+	r.Post("/login", controllers.LoginWithRefrehToken)
 	r.Post("/register", controllers.UserRegister)
-
-	r.Post("/new-password", middlewares.IsAuthenticated, controllers.NewPasswordSelf)
-
-	r.Post("/login-n", controllers.UserLogin)
 	r.Post("/refresh", controllers.RefreshToken)
+	r.Post("/new-password", middlewares.IsAuthenticated, controllers.NewPasswordSelf)
 
 }
