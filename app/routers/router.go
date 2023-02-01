@@ -16,4 +16,5 @@ func Init(app *fiber.App) {
 	User(app)
 	Auth(app)
 	ClassAttendance(app)
+	AcademicYear(app)
 }
