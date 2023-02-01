@@ -12,7 +12,7 @@ import (
 
 type AcademicYear struct {
 	MyGorm
-	Name string `json:"name" gorm:"size:50"`
+	Name string `json:"name" gorm:"size:50, index:idx_name,unique"`
 }
 
 func AcademicYearList() Response {
@@ -60,6 +60,49 @@ func AcademicYearDetail(year_id string) Response {
 		log.Print("error Get AcademicYearDetail")
 		log.Print(result.Error)
 
+		res.Status = http.StatusInternalServerError
+		res.Message = "Something went wrong!"
+		return res
+	}
+
+	res.Status = http.StatusOK
+	res.Message = "Success"
+	res.Data = academic_year
+	return res
+}
+
+func AcademicYearUpdate(year_id string, new_name string) Response {
+	var res Response
+	var academic_year AcademicYear
+
+	_, err := strconv.Atoi(year_id)
+	if err != nil {
+		log.Println(err)
+		res.Status = http.StatusBadRequest
+		res.Message = "invalid id"
+		return res
+	}
+
+	db := config.GetDBInstance()
+	result := db.Where("deleted_at IS NULL").First(&academic_year, year_id)
+	if result.Error != nil {
+		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
+			res.Status = http.StatusOK
+			res.Message = "can't find record"
+			return res
+		}
+
+		log.Print("error Get AcademicYearDetail")
+		log.Print(result.Error)
+
+		res.Status = http.StatusInternalServerError
+		res.Message = "Something went wrong!"
+		return res
+	}
+
+	academic_year.Name = new_name
+
+	if result := db.Save(&academic_year); result.Error != nil {
 		res.Status = http.StatusInternalServerError
 		res.Message = "Something went wrong!"
 		return res
