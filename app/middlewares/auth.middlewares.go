@@ -18,7 +18,7 @@ func IsAuthenticated(c *fiber.Ctx) error {
 	tokenString := string(raw_token)
 
 	if tokenString == "" {
-		return c.Status(http.StatusUnauthorized).JSON(
+		return c.Status(http.StatusForbidden).JSON(
 			map[string]string{
 				"message": "Unauthorized, need access token to access this API route!",
 			},
@@ -31,7 +31,7 @@ func IsAuthenticated(c *fiber.Ctx) error {
 	})
 	if err != nil {
 		fmt.Println(err)
-		return c.Status(http.StatusUnauthorized).JSON(
+		return c.Status(http.StatusForbidden).JSON(
 			map[string]string{
 				"message": "Unauthorized, access token is invalid!",
 			},
@@ -40,38 +40,14 @@ func IsAuthenticated(c *fiber.Ctx) error {
 
 	if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 
-		// // REDIS START
-		// // set token to blacklist in redis
-		// // rdb := config.GetDBInstanceRedis()
-		// rdb := redis.NewClient(&redis.Options{
-		// 	Addr:     "localhost:6379",
-		// 	Password: "", // no password set
-		// 	DB:       0,  // use default DB
-		// })
-
-		// issuer := fmt.Sprintf("%v", claims["issuer"])
-		// var ctx = context.TODO()
-		// val, errrdb := rdb.Get(ctx, issuer).Result()
-		// if errrdb != nil {
-		// 	log.Println("====>redis err read blacklist token<===")
-		// 	log.Println(errrdb)
-		// }
-
-		// fmt.Println("val>>>>>", val)
-		// // REDIS END
-
 		c.Locals("user_id", claims["user_id"])
 		c.Locals("user_email", claims["email"])
+		c.Locals("role", claims["role"])
 
-		if claims["is_admin"] == true {
-			c.Locals("is_admin", true)
-		} else {
-			c.Locals("is_admin", false)
-		}
 		return c.Next()
 	}
 
-	return c.Status(http.StatusUnauthorized).JSON(
+	return c.Status(http.StatusForbidden).JSON(
 		map[string]string{
 			"message": "Unauthorized, access token is invalid!",
 		},
@@ -79,14 +55,29 @@ func IsAuthenticated(c *fiber.Ctx) error {
 }
 
 func IsAdmin(c *fiber.Ctx) error {
-	if c.Locals("is_admin") == true {
+	if c.Locals("role") == "admin" {
 		return c.Next()
 	}
 
-	return c.Status(http.StatusUnauthorized).JSON(
+	if c.Locals("role") == "superadmin" {
+		return c.Next()
+	}
+
+	return c.Status(http.StatusForbidden).JSON(
 		map[string]string{
 			"message": "Unauthorized to access this menu",
 		},
 	)
+}
 
+func IsSuperadmin(c *fiber.Ctx) error {
+	if c.Locals("role") == "superadmin" {
+		return c.Next()
+	}
+
+	return c.Status(http.StatusForbidden).JSON(
+		map[string]string{
+			"message": "Unauthorized to access this menu",
+		},
+	)
 }
