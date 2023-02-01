@@ -31,7 +31,7 @@ func AcademicYearList() Response {
 	}
 
 	res.Status = http.StatusOK
-	res.Message = "success"
+	res.Message = "ok"
 	res.Data = academic_years
 	return res
 }
@@ -66,7 +66,7 @@ func AcademicYearDetail(year_id string) Response {
 	}
 
 	res.Status = http.StatusOK
-	res.Message = "Success"
+	res.Message = "ok"
 	res.Data = academic_year
 	return res
 }
@@ -109,7 +109,30 @@ func AcademicYearUpdate(year_id string, new_name string) Response {
 	}
 
 	res.Status = http.StatusOK
-	res.Message = "Success"
+	res.Message = "ok"
 	res.Data = academic_year
+	return res
+}
+
+func AcademicYearNew(new_name string) Response {
+	var res Response
+	var academic_year AcademicYear
+
+	academic_year.Name = new_name
+
+	db := config.GetDBInstance()
+	if result := db.Create(&academic_year); result.Error != nil {
+		log.Print("error AcademicYearNew")
+		log.Print(result.Error)
+
+		res.Status = http.StatusInternalServerError
+		res.Message = "error save new record"
+		return res
+	}
+
+	res.Status = http.StatusOK
+	res.Message = "ok"
+	res.Data = academic_year
+
 	return res
 }

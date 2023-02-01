@@ -17,6 +17,7 @@ func AcademicYear(app *fiber.App) {
 	)
 
 	IsAdmin.Get("/", controllers.AcademicYearList)
+	IsAdmin.Post("/", controllers.AcademicYearNew)
 	IsAdmin.Get("/:id", controllers.AcademicYearDetail)
 	IsAdmin.Put("/:id", controllers.AcademicYearUpdate)
 }

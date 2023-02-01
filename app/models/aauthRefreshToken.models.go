@@ -40,8 +40,8 @@ func GenerateAccessClaims(userClaim *UserClaim, issuer string) string {
 		"email":   userClaim.Email,
 		"user_id": userClaim.Id,
 		"role":    userClaim.Role,
-		"exp":     time.Now().Add(time.Minute * 15).Unix(),
-		"iat":     time.Now().Unix(),
+		// "exp":     time.Now().Add(time.Minute * 15).Unix(),
+		"iat": time.Now().Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
@@ -60,8 +60,8 @@ func GenerateRefreshClaims(userClaim *UserClaim, issuer string) string {
 		"email":   userClaim.Email,
 		"user_id": userClaim.Id,
 		"role":    userClaim.Role,
-		"exp":     time.Now().Add(30 * 24 * time.Hour).Unix(),
-		"iat":     time.Now().Unix(),
+		// "exp":     time.Now().Add(30 * 24 * time.Hour).Unix(),
+		"iat": time.Now().Unix(),
 	}
 
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaim)
