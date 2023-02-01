@@ -8,7 +8,14 @@ import (
 )
 
 func AcademicYear(app *fiber.App) {
-	r := app.Group("/academic-years", middlewares.IsAuthenticated, middlewares.IsAdmin)
+	IsAuthenticated := app.Group("/academic-years",
+		middlewares.IsAuthenticated,
+	)
 
-	r.Get("/", controllers.AcademicYearList)
+	IsAdmin := IsAuthenticated.Group("/",
+		middlewares.IsAdmin,
+	)
+
+	IsAdmin.Get("/", controllers.AcademicYearList)
+	IsAdmin.Get("/:id", controllers.AcademicYearDetail)
 }
