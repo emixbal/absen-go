@@ -4,13 +4,10 @@ import (
 	"absen-go/app/models"
 	"absen-go/app/requests"
 	"absen-go/config"
-	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/utils"
 	"github.com/golang-jwt/jwt"
@@ -93,11 +90,7 @@ func RefreshToken(c *fiber.Ctx) error {
 	userClaim.Issuer = fmt.Sprintf("%v", claims["issuer"])
 	userClaim.Id = user_id_int
 	userClaim.Email = fmt.Sprintf("%v", claims["email"])
-	if claims["is_admin"] == true {
-		// userClaim.IsAdmin = true
-	} else {
-		// userClaim.IsAdmin = false
-	}
+	userClaim.Role = fmt.Sprintf("%v", claims["role"])
 
 	// if fail refresh token
 	accessToken, refreshToken := models.GenerateTokens(&userClaim, true)
@@ -105,19 +98,6 @@ func RefreshToken(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "something went wrong",
 		})
-	}
-
-	// set token to blacklist in redis
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
-	// rdb := config.GetDBInstanceRedis()
-	errrdb := rdb.Set(context.TODO(), userClaim.Issuer, userClaim.Id, 0).Err()
-	if errrdb != nil {
-		log.Println("====>redis err save blacklist token<===")
-		log.Println(errrdb)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
