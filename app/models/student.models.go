@@ -62,7 +62,7 @@ func FethAllStudents(limit int, offset int, class string) Response {
 
 	total_page = math.Ceil(float64(total_data) / float64(limit))
 
-	lr.Record = sudentsResult
+	lr.Records = sudentsResult
 	lr.TotalData = total_data
 	lr.TotalPage = total_page
 	lr.Page = offset + 1
