@@ -117,10 +117,27 @@ func AcademicYearUpdate(year_id string, new_name string) Response {
 func AcademicYearNew(new_name string) Response {
 	var res Response
 	var academic_year AcademicYear
+	var isNameExist = true
 
 	academic_year.Name = new_name
 
 	db := config.GetDBInstance()
+	if result := db.Where("name = ?", new_name).Take(&academic_year); result.Error != nil {
+		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
+			isNameExist = false
+		}
+
+		res.Status = http.StatusInternalServerError
+		res.Message = "error save new record"
+		return res
+	}
+
+	if isNameExist {
+		res.Status = http.StatusBadRequest
+		res.Message = "name already exist"
+		return res
+	}
+
 	if result := db.Create(&academic_year); result.Error != nil {
 		log.Print("error AcademicYearNew")
 		log.Print(result.Error)
@@ -133,6 +150,5 @@ func AcademicYearNew(new_name string) Response {
 	res.Status = http.StatusOK
 	res.Message = "ok"
 	res.Data = academic_year
-
 	return res
 }
