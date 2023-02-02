@@ -11,5 +11,5 @@ type ListResponse struct {
 	TotalData interface{} `json:"total_data"`
 	PerPage   interface{} `json:"per_page"`
 	Page      interface{} `json:"page"`
-	Data      interface{} `json:"data"`
+	Record    interface{} `json:"record"`
 }
