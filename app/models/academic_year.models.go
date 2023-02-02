@@ -86,9 +86,7 @@ func AcademicYearUpdate(year_id string, new_name string) Response {
 
 	db := config.GetDBInstance()
 	if result := db.Where("name = ?", new_name).Not("id = ?", year_id).Take(&academic_year); result.Error != nil {
-		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
-			isNameExist = false
-		}
+		isNameExist = !errors.Is(result.Error, gorm.ErrRecordNotFound)
 	}
 
 	if isNameExist {
