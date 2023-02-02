@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -30,10 +30,10 @@ func IsAuthenticated(c *fiber.Ctx) error {
 		return jwtKey, nil
 	})
 	if err != nil {
-		fmt.Println(err)
-		return c.Status(http.StatusForbidden).JSON(
+		log.Println(err)
+		return c.Status(http.StatusUnauthorized).JSON(
 			map[string]string{
-				"message": "Unauthorized, access token is invalid!",
+				"message": "token expired!",
 			},
 		)
 	}

@@ -5,6 +5,7 @@ import (
 	"absen-go/app/requests"
 	"absen-go/config"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -62,8 +63,23 @@ func LoginWithRefrehToken(c *fiber.Ctx) error {
 func RefreshToken(c *fiber.Ctx) error {
 	var userClaim models.UserClaim
 
-	refreshToken := c.FormValue("refresh_token")
+	p := new(requests.RefreshTokenForm)
+	if err := c.BodyParser(p); err != nil {
+		log.Println(err)
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"message": "Empty payloads",
+		})
+	}
+	v := validate.Struct(p)
+	if !v.Validate() {
+		log.Println(v.Errors.One())
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"message":      v.Errors.One(),
+			"RefreshToken": p.RefreshToken,
+		})
+	}
 
+	refreshToken := p.RefreshToken
 	token, err := jwt.Parse(refreshToken, func(token *jwt.Token) (interface{}, error) {
 		//Make sure that the token method conform to "SigningMethodHMAC"
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -73,8 +89,10 @@ func RefreshToken(c *fiber.Ctx) error {
 	})
 
 	if err != nil {
-		fmt.Println("the error from parse: ", err)
-		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": err})
+		log.Println("the error from parse: ", err)
+		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{
+			"message": err,
+		})
 	}
 
 	//is token valid?

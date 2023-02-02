@@ -40,8 +40,8 @@ func GenerateAccessClaims(userClaim *UserClaim, issuer string) string {
 		"email":   userClaim.Email,
 		"user_id": userClaim.Id,
 		"role":    userClaim.Role,
-		// "exp":     time.Now().Add(time.Minute * 15).Unix(),
-		"iat": time.Now().Unix(),
+		"exp":     time.Now().Add(time.Second * 30).Unix(),
+		"iat":     time.Now().Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
