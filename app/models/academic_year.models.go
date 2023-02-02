@@ -74,6 +74,7 @@ func AcademicYearDetail(year_id string) Response {
 func AcademicYearUpdate(year_id string, new_name string) Response {
 	var res Response
 	var academic_year AcademicYear
+	var isNameExist = true
 
 	_, err := strconv.Atoi(year_id)
 	if err != nil {
@@ -84,6 +85,18 @@ func AcademicYearUpdate(year_id string, new_name string) Response {
 	}
 
 	db := config.GetDBInstance()
+	if result := db.Where("name = ?", new_name).Not("id = ?", year_id).Take(&academic_year); result.Error != nil {
+		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
+			isNameExist = false
+		}
+	}
+
+	if isNameExist {
+		res.Status = http.StatusBadRequest
+		res.Message = "name already exist"
+		return res
+	}
+
 	result := db.Where("deleted_at IS NULL").First(&academic_year, year_id)
 	if result.Error != nil {
 		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
@@ -122,14 +135,10 @@ func AcademicYearNew(new_name string) Response {
 	academic_year.Name = new_name
 
 	db := config.GetDBInstance()
-	if result := db.Where("name = ?", new_name).Take(&academic_year); result.Error != nil {
-		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
-			isNameExist = false
-		}
 
-		res.Status = http.StatusInternalServerError
-		res.Message = "error save new record"
-		return res
+	// ensure no dupicate data
+	if result := db.Where("name = ?", new_name).Take(&academic_year); result.Error != nil {
+		isNameExist = !errors.Is(result.Error, gorm.ErrRecordNotFound)
 	}
 
 	if isNameExist {
