@@ -17,10 +17,8 @@ func FetchAllStudents(c *fiber.Ctx) error {
 		limit, _ = strconv.Atoi(c.Query("per_page"))
 	}
 	if c.Query("page") != "" {
-		offset, _ = strconv.Atoi(c.Query("page"))
-		if offset != 0 {
-			offset = offset - 1
-		}
+		page, _ := strconv.Atoi(c.Query("page"))
+		offset = page - 1
 	}
 	if c.Query("class") != "" {
 		class_filter = strings.Split(c.Query("class"), ",")

@@ -7,9 +7,10 @@ type Response struct {
 }
 
 type ListResponse struct {
-	TotalPage interface{} `json:"total_page"`
-	TotalData interface{} `json:"total_data"`
-	PerPage   interface{} `json:"per_page"`
-	Page      interface{} `json:"page"`
-	Records   interface{} `json:"records"`
+	TotalPage    interface{} `json:"total_page"`
+	TotalData    interface{} `json:"total_data"`
+	TotalRecords interface{} `json:"total_records"`
+	PerPage      interface{} `json:"per_page"`
+	Page         interface{} `json:"page"`
+	Records      interface{} `json:"records"`
 }

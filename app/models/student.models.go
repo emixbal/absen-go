@@ -18,6 +18,7 @@ type Student struct {
 
 func FethAllStudents(limit int, offset int, class []string) Response {
 	type StudentResult struct {
+		ID        string `json:"id"`
 		Name      string `json:"name"`
 		NISN      string `json:"nisn"`
 		ClassName string `json:"class_name"`
@@ -34,8 +35,8 @@ func FethAllStudents(limit int, offset int, class []string) Response {
 	db := config.GetDBInstance()
 
 	query := db.Table("students").
-		Select("students.name, students.nisn, classes.name as class_name, classes.id as class_id, students.is_active").
 		Joins("left join classes on students.class_id = classes.id").
+		Select("students.id, students.name, students.nisn, classes.name as class_name, classes.id as class_id, students.is_active").
 		Where("students.is_active = ?", true).
 		Order("classes.id asc").
 		Order("students.name asc")
@@ -48,8 +49,10 @@ func FethAllStudents(limit int, offset int, class []string) Response {
 
 	result := query.
 		Limit(limit).
-		Offset(offset).
+		Offset(offset * limit).
 		Scan(&sudentsResult)
+
+	total_records := result.RowsAffected
 
 	if result.Error != nil {
 		log.Println("Err fetching data")
@@ -64,6 +67,7 @@ func FethAllStudents(limit int, offset int, class []string) Response {
 
 	lr.Records = sudentsResult
 	lr.TotalData = total_data
+	lr.TotalRecords = total_records
 	lr.TotalPage = total_page
 	lr.Page = offset + 1
 	lr.PerPage = limit
