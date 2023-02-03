@@ -16,7 +16,7 @@ type Student struct {
 	IsActive bool   `json:"is_active,omitempty" gorm:"default:true"`
 }
 
-func FethAllStudents(limit int, offset int, class string) Response {
+func FethAllStudents(limit int, offset int, class []string) Response {
 	type StudentResult struct {
 		Name      string `json:"name"`
 		NISN      string `json:"nisn"`
@@ -37,11 +37,11 @@ func FethAllStudents(limit int, offset int, class string) Response {
 		Select("students.name, students.nisn, classes.name as class_name, classes.id as class_id, students.is_active").
 		Joins("left join classes on students.class_id = classes.id").
 		Where("students.is_active = ?", true).
-		Order("classes.name asc").
+		Order("classes.id asc").
 		Order("students.name asc")
 
-	if class != "" {
-		query.Where("classes.name = ?", class)
+	if len(class) > 0 {
+		query.Where("classes.id IN ?", class)
 	}
 
 	query.Count(&total_data)
