@@ -3,7 +3,7 @@ package models
 import (
 	"absen-go/config"
 	"errors"
-	"fmt"
+	"log"
 	"net/http"
 
 	"gorm.io/gorm"
@@ -26,8 +26,8 @@ func FethAllUsers(limit, offset int) (Response, error) {
 	db := config.GetDBInstance()
 
 	if result := db.Limit(limit).Offset(offset).Where("is_active = ?", true).Find(&users); result.Error != nil {
-		fmt.Print("error FethAllUsers")
-		fmt.Print(result.Error)
+		log.Print("error FethAllUsers")
+		log.Print(result.Error)
 
 		res.Status = http.StatusInternalServerError
 		res.Message = "error fetchin records"
@@ -70,8 +70,8 @@ func CreateAUser(user *User) (Response, error) {
 	db := config.GetDBInstance()
 
 	if result := db.Create(&user); result.Error != nil {
-		fmt.Print("error CreateAUser")
-		fmt.Print(result.Error)
+		log.Print("error CreateAUser")
+		log.Print(result.Error)
 
 		res.Status = http.StatusInternalServerError
 		res.Message = "error save new record"
