@@ -21,7 +21,7 @@ type ClassAttendanceStudent struct {
 	Leave             time.Time       `json:"leave" gorm:"default:null"`
 }
 
-func ClassAttendanceStudentArrive(student_id string) (Response, error) {
+func ClassAttendanceStudentArrive(code string) (Response, error) {
 	var res Response
 	var student Student
 	var class_attendance ClassAttendance
@@ -31,7 +31,7 @@ func ClassAttendanceStudentArrive(student_id string) (Response, error) {
 	db := config.GetDBInstance()
 
 	// cek apakah student exist
-	if result := db.Preload("Class").Where("id = ?", student_id).First(&student); result.Error != nil {
+	if result := db.Preload("Class").Where("code = ?", code).First(&student); result.Error != nil {
 		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
 			res.Status = http.StatusBadRequest
 			res.Message = "student not found."
@@ -93,7 +93,7 @@ func ClassAttendanceStudentArrive(student_id string) (Response, error) {
 
 }
 
-func ClassAttendanceStudentLeave(student_id string) (Response, error) {
+func ClassAttendanceStudentLeave(code string) (Response, error) {
 	var res Response
 	var student Student
 	var class_attendance ClassAttendance
@@ -102,7 +102,7 @@ func ClassAttendanceStudentLeave(student_id string) (Response, error) {
 
 	db := config.GetDBInstance()
 
-	if result := db.Preload("Class").Where("id = ?", student_id).First(&student); result.Error != nil {
+	if result := db.Preload("Class").Where("code = ?", code).First(&student); result.Error != nil {
 		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
 			res.Status = http.StatusBadRequest
 			res.Message = "student not found."

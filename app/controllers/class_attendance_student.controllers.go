@@ -30,7 +30,7 @@ func ClassAttendanceStudentArrive(c *fiber.Ctx) error {
 		return c.Status(res.Status).JSON(res)
 	}
 
-	result, _ := models.ClassAttendanceStudentArrive(p.StudentID)
+	result, _ := models.ClassAttendanceStudentArrive(p.Code)
 	return c.Status(result.Status).JSON(result)
 }
 
@@ -54,6 +54,6 @@ func ClassAttendanceStudentLeave(c *fiber.Ctx) error {
 		return c.Status(res.Status).JSON(res)
 	}
 
-	result, _ := models.ClassAttendanceStudentLeave(p.StudentID)
+	result, _ := models.ClassAttendanceStudentLeave(p.Code)
 	return c.Status(result.Status).JSON(result)
 }
