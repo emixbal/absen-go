@@ -2,25 +2,26 @@ package models
 
 import (
 	"absen-go/config"
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
-
-	"github.com/gofiber/fiber/v2"
 )
 
-func RecapStudentAttendance(class_id, month string) Response {
+func RecapStudentAttendance(class_id, year_month string) Response {
 	type StudentAttendance struct {
 		AttendanceID int       `json:"attendance_id"`
 		Arrive       time.Time `json:"arrive"`
 		Leave        time.Time `json:"leave"`
 	}
 	type StudentResult struct {
-		ID          string `json:"id"`
-		Name        string `json:"name"`
-		NISN        string `json:"nisn"`
-		Code        string `json:"code"`
-		Attendances []StudentAttendance
+		ID          string              `json:"id"`
+		Name        string              `json:"name"`
+		NISN        string              `json:"nisn"`
+		Code        string              `json:"code"`
+		Attendances []StudentAttendance `json:"attendances"`
 	}
 
 	var res Response
@@ -28,10 +29,16 @@ func RecapStudentAttendance(class_id, month string) Response {
 	var sudents_result []StudentResult
 	var class_attendances []ClassAttendance
 
-	db := config.GetDBInstance()
+	year_month_splited := strings.Split(year_month, "-")
 
-	start_month, _ := time.Parse("2006-01-02", "2023-"+month+"-01")
-	end_month, _ := time.Parse("2006-01-02", "2023-"+month+"-28")
+	int_month, _ := strconv.Atoi(year_month_splited[1])
+	month_formatted := fmt.Sprintf("%02d", int_month)
+	year_formatted := year_month_splited[0]
+
+	start_month, _ := time.Parse("2006-01-02", year_formatted+"-"+month_formatted+"-01")
+	end_month := start_month.AddDate(0, 1, -1)
+
+	db := config.GetDBInstance()
 
 	if result := db.Where("date > ?", start_month).Where("date < ?", end_month).Find(&class_attendances); result.Error != nil {
 		log.Print("error fetch class_attendances")
@@ -44,7 +51,7 @@ func RecapStudentAttendance(class_id, month string) Response {
 
 	if len(class_attendances) < 1 {
 		res.Status = http.StatusOK
-		res.Message = "tidak ada hari kerja pada bulan " + month
+		res.Message = "no data"
 		return res
 	}
 
@@ -94,10 +101,14 @@ func RecapStudentAttendance(class_id, month string) Response {
 		sudents_result = append(sudents_result, sudent_result)
 	}
 
+	if len(sudents_result) < 1 {
+		res.Status = http.StatusOK
+		res.Message = "no data"
+		return res
+	}
+
 	res.Status = http.StatusOK
 	res.Message = "ok"
-	res.Data = fiber.Map{
-		"student_in_class": sudents_result,
-	}
+	res.Data = sudents_result
 	return res
 }

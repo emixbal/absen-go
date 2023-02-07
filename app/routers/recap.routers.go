@@ -12,6 +12,6 @@ import (
 func RecapStudentAttendance(app *fiber.App) {
 	IsAuthenticated := app.Group("/recap-student-attendance", middlewares.IsAuthenticated)
 
-	IsAuthenticated.Get("/:class_id/:month", controllers.RecapStudentAttendance)
+	IsAuthenticated.Get("/:class_id/:year_month", controllers.RecapStudentAttendance)
 
 }

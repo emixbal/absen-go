@@ -8,8 +8,8 @@ import (
 
 func RecapStudentAttendance(c *fiber.Ctx) error {
 	class_id := c.Params("class_id")
-	month := c.Params("month")
+	year_month := c.Params("year_month")
 
-	result := models.RecapStudentAttendance(class_id, month)
+	result := models.RecapStudentAttendance(class_id, year_month)
 	return c.Status(result.Status).JSON(result)
 }
