@@ -13,6 +13,7 @@ import (
 func RecapStudentAttendance(class_id, year_month string) Response {
 	type StudentAttendance struct {
 		AttendanceID int       `json:"attendance_id"`
+		Date         time.Time `json:"date"`
 		Arrive       time.Time `json:"arrive"`
 		Leave        time.Time `json:"leave"`
 	}
@@ -81,7 +82,8 @@ func RecapStudentAttendance(class_id, year_month string) Response {
 		var cases []ClassAttendanceStudent
 		for _, class_attendance := range class_attendances {
 			var cas ClassAttendanceStudent
-			db.Where("class_attendance_id = ?", class_attendance.ID).Where("student_id = ?", sudent_result.ID).Take(&cas)
+			db.Preload("ClassAttendance").Where("class_attendance_id = ?", class_attendance.ID).Where("student_id = ?", sudent_result.ID).Take(&cas)
+
 			cases = append(cases, cas)
 		}
 
@@ -92,6 +94,7 @@ func RecapStudentAttendance(class_id, year_month string) Response {
 			cas.AttendanceID = val.ClassAttendanceID
 			cas.Arrive = val.Arrive
 			cas.Leave = val.Leave
+			cas.Date = val.ClassAttendance.Date
 
 			arr_cas = append(arr_cas, cas)
 		}
