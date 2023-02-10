@@ -3,20 +3,40 @@ package models
 import (
 	"absen-go/config"
 	"encoding/csv"
+	"errors"
 	"log"
 	"os"
 	"strconv"
 	"strings"
+
+	"gorm.io/gorm"
 )
 
 func StudentsUploadList(class_id string) Response {
 	var res Response
 	var students []Student
 	var student Student
+	var class Class
 
 	db := config.GetDBInstance()
 
 	int_class_id, _ := strconv.Atoi(class_id)
+
+	if result := db.First(&class, int_class_id); result.Error != nil {
+		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
+			res.Status = 400
+			res.Message = "class not exist"
+			return res
+		}
+
+		log.Print("error check class is exist")
+		log.Print(result.Error)
+
+		res.Status = 500
+		res.Message = "error check class is exist"
+		return res
+	}
+
 	if result := db.Where("class_id = ?", int_class_id).Find(&students); result.Error != nil {
 		log.Print("error check class is empty")
 		log.Print(result.Error)
