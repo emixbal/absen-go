@@ -50,12 +50,6 @@ func RecapStudentAttendance(class_id, year_month string) Response {
 		return res
 	}
 
-	if len(class_attendances) < 1 {
-		res.Status = http.StatusOK
-		res.Message = "no data"
-		return res
-	}
-
 	rows_fetch_student, fetch_student_err := db.Table("students").
 		Select("students.id, students.name, students.nisn, students.code").
 		Where("students.class_id = ?", class_id).
