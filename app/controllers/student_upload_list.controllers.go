@@ -4,6 +4,7 @@ import (
 	"absen-go/app/models"
 	"fmt"
 	"log"
+	"os"
 	"path/filepath"
 
 	"github.com/gofiber/fiber/v2"
@@ -54,5 +55,14 @@ func StudentsUploadList(c *fiber.Ctx) error {
 	}
 
 	result := models.StudentsUploadList(payload.ClassID)
+
+	if err := os.Remove("./files/students_files_temp/" + payload.ClassID + ".csv"); err != nil {
+		log.Println("err remove temp")
+		log.Println(err)
+		return c.Status(500).JSON(fiber.Map{
+			"message": err,
+		})
+	}
+
 	return c.Status(result.Status).JSON(result)
 }
