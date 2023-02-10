@@ -11,4 +11,5 @@ func Student(app *fiber.App) {
 	IsAuthenticated := app.Group("/students", middlewares.IsAuthenticated)
 
 	IsAuthenticated.Get("/", controllers.FetchAllStudents)
+	IsAuthenticated.Post("/", controllers.StudentsUploadList)
 }
