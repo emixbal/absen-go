@@ -11,5 +11,6 @@ func Class(app *fiber.App) {
 	r := app.Group("/classes", middlewares.IsAuthenticated)
 
 	r.Get("/", controllers.ClassFetchAll)
+	r.Post("/", controllers.ClassAddNew)
 
 }
