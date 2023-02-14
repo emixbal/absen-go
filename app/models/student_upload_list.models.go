@@ -54,7 +54,10 @@ func StudentsUploadList(class_id string) Response {
 
 	file, err := os.Open("./files/students_files_temp/" + class_id + ".csv")
 	if err != nil {
-		panic(err)
+		log.Println(err)
+		res.Status = 500
+		res.Message = "err os.Open"
+		return res
 	}
 	defer file.Close()
 
@@ -62,17 +65,50 @@ func StudentsUploadList(class_id string) Response {
 	records, err := csvReader.ReadAll()
 	if err != nil {
 		log.Fatal("Unable to parse file as CSV for ", err)
+		res.Status = 500
+		res.Message = "Unable to parse file as CSV"
+		return res
 	}
 
 	for _, val := range records {
+
+		if len([]rune(val[0])) < 1 {
+			res.Status = 400
+			res.Message = "Ada nama yang kosong"
+			return res
+		}
+		if len([]rune(val[1])) < 1 {
+			res.Status = 400
+			res.Message = "Ada nisn/nis yang kosong"
+			return res
+		}
+		if len([]rune(val[2])) < 1 {
+			res.Status = 400
+			res.Message = "Ada nisn/nis yang kosong"
+			return res
+		}
+
 		nisn_nis := strings.Split(val[1], "/")
+
+		if len(nisn_nis) != 2 {
+			res.Status = 400
+			res.Message = "format nis/nisn salah " + val[1]
+			return res
+		}
 
 		student.Name = val[0]
 		student.NIS = strings.Trim(nisn_nis[0], " ")
 		student.NISN = strings.Trim(nisn_nis[1], " ")
+		student.Code = strings.Trim(val[2], " ")
 		student.ClassID = int_class_id
 
 		students = append(students, student)
+	}
+
+	if len(students) == 0 {
+		res.Status = 400
+		res.Message = "File kosong"
+		return res
 	}
 
 	if result := db.Create(&students); result.Error != nil {
