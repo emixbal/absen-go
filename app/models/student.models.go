@@ -22,6 +22,7 @@ func FethAllStudents(limit int, offset int, class []string) Response {
 	type StudentResult struct {
 		ID        string `json:"id"`
 		Name      string `json:"name"`
+		NIS       string `json:"nis"`
 		NISN      string `json:"nisn"`
 		Code      string `json:"code"`
 		ClassName string `json:"class_name"`
@@ -39,7 +40,7 @@ func FethAllStudents(limit int, offset int, class []string) Response {
 
 	query := db.Table("students").
 		Joins("left join classes on students.class_id = classes.id").
-		Select("students.id, students.name, students.code, students.nisn, classes.name as class_name, classes.id as class_id, students.is_active").
+		Select("students.id, students.name, students.nis, students.nisn, students.code, classes.name as class_name, classes.id as class_id, students.is_active").
 		Where("students.is_active = ?", true).
 		Order("classes.id asc").
 		Order("students.name asc")
