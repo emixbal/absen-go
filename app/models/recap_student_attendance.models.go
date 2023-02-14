@@ -20,6 +20,7 @@ func RecapStudentAttendance(class_id, year_month string) Response {
 	type StudentResult struct {
 		ID          string              `json:"id"`
 		Name        string              `json:"name"`
+		NIS         string              `json:"nis"`
 		NISN        string              `json:"nisn"`
 		Code        string              `json:"code"`
 		Attendances []StudentAttendance `json:"attendances"`
@@ -51,7 +52,7 @@ func RecapStudentAttendance(class_id, year_month string) Response {
 	}
 
 	rows_fetch_student, fetch_student_err := db.Table("students").
-		Select("students.id, students.name, students.nisn, students.code").
+		Select("students.id, students.name, students.nis, students.nisn, students.code").
 		Where("students.class_id = ?", class_id).
 		Order("students.name asc").Rows()
 
@@ -67,7 +68,8 @@ func RecapStudentAttendance(class_id, year_month string) Response {
 	}
 
 	for rows_fetch_student.Next() {
-		if err := rows_fetch_student.Scan(&sudent_result.ID, &sudent_result.Name, &sudent_result.NISN, &sudent_result.Code); err != nil {
+		if err := rows_fetch_student.Scan(&sudent_result.ID, &sudent_result.Name, &sudent_result.NIS, &sudent_result.NISN, &sudent_result.Code); err != nil {
+			log.Panicln("Err scan students")
 			res.Status = http.StatusInternalServerError
 			res.Message = "Err scan students"
 			return res
