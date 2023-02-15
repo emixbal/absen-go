@@ -24,7 +24,7 @@ func SeederRole(db *gorm.DB) {
 		},
 		{
 			ID:       3,
-			Name:     "coordinator",
+			Name:     "oprator",
 			IsActive: true,
 		},
 	}
