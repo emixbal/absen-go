@@ -22,13 +22,14 @@ func RecapMemberAttendance(class_id, year_month string) Response {
 		Name        string             `json:"name"`
 		NIS         string             `json:"nis"`
 		NISN        string             `json:"nisn"`
+		NBM         string             `json:"nbm"`
 		Code        string             `json:"code"`
 		Attendances []MemberAttendance `json:"attendances"`
 	}
 
 	var res Response
-	var sudent_result MemberResult
-	var sudents_result []MemberResult
+	var member_result MemberResult
+	var members_result []MemberResult
 	var class_attendances []ClassAttendance
 
 	year_month_splited := strings.Split(year_month, "-")
@@ -52,7 +53,7 @@ func RecapMemberAttendance(class_id, year_month string) Response {
 	}
 
 	rows_fetch_member, fetch_member_err := db.Table("members").
-		Select("members.id, members.name, members.nis, members.nisn, members.code").
+		Select("members.id, members.name, members.nis, members.nisn, members.nbm, members.code").
 		Where("members.class_id = ?", class_id).
 		Order("members.name asc").Rows()
 
@@ -68,7 +69,7 @@ func RecapMemberAttendance(class_id, year_month string) Response {
 	}
 
 	for rows_fetch_member.Next() {
-		if err := rows_fetch_member.Scan(&sudent_result.ID, &sudent_result.Name, &sudent_result.NIS, &sudent_result.NISN, &sudent_result.Code); err != nil {
+		if err := rows_fetch_member.Scan(&member_result.ID, &member_result.Name, &member_result.NIS, &member_result.NISN, &member_result.NBM, &member_result.Code); err != nil {
 			log.Panicln("Err scan members")
 			res.Status = http.StatusInternalServerError
 			res.Message = "Err scan members"
@@ -78,7 +79,7 @@ func RecapMemberAttendance(class_id, year_month string) Response {
 		var cases []ClassAttendanceMember
 		for _, class_attendance := range class_attendances {
 			var cas ClassAttendanceMember
-			db.Preload("ClassAttendance").Where("class_attendance_id = ?", class_attendance.ID).Where("member_id = ?", sudent_result.ID).Take(&cas)
+			db.Preload("ClassAttendance").Where("class_attendance_id = ?", class_attendance.ID).Where("member_id = ?", member_result.ID).Take(&cas)
 
 			cases = append(cases, cas)
 		}
@@ -95,12 +96,12 @@ func RecapMemberAttendance(class_id, year_month string) Response {
 			arr_cas = append(arr_cas, cas)
 		}
 
-		sudent_result.Attendances = arr_cas
+		member_result.Attendances = arr_cas
 
-		sudents_result = append(sudents_result, sudent_result)
+		members_result = append(members_result, member_result)
 	}
 
-	if len(sudents_result) < 1 {
+	if len(members_result) < 1 {
 		res.Status = http.StatusOK
 		res.Message = "no data"
 		return res
@@ -108,6 +109,6 @@ func RecapMemberAttendance(class_id, year_month string) Response {
 
 	res.Status = http.StatusOK
 	res.Message = "ok"
-	res.Data = sudents_result
+	res.Data = members_result
 	return res
 }

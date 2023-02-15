@@ -25,6 +25,7 @@ func FethAllMembers(limit int, offset int, class []string) Response {
 		Name      string `json:"name"`
 		NIS       string `json:"nis"`
 		NISN      string `json:"nisn"`
+		NBM       string `json:"nbm" gorm:"size:10"`
 		Code      string `json:"code"`
 		ClassName string `json:"class_name"`
 		ClassID   string `json:"class_id"`
@@ -41,7 +42,7 @@ func FethAllMembers(limit int, offset int, class []string) Response {
 
 	query := db.Table("members").
 		Joins("left join classes on members.class_id = classes.id").
-		Select("members.id, members.name, members.nis, members.nisn, members.code, classes.name as class_name, classes.id as class_id, members.is_active").
+		Select("members.id, members.name, members.nis, members.nisn, members.nbm, members.code, classes.name as class_name, classes.id as class_id, members.is_active").
 		Where("members.is_active = ?", true).
 		Order("classes.id asc").
 		Order("members.name asc")
