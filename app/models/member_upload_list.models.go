@@ -4,6 +4,7 @@ import (
 	"absen-go/config"
 	"encoding/csv"
 	"errors"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -70,39 +71,44 @@ func MembersUploadList(class_id string) Response {
 		return res
 	}
 
-	for _, val := range records {
+	for index, val := range records {
+		fmt.Println(index)
+		if index != 0 {
+			if len(val) < 4 {
+				res.Status = 400
+				res.Message = "Format kolom salah. Harus berformat:Nama,NIS/NISN,NomerKartu,NBM"
+				return res
+			}
 
-		if len([]rune(val[0])) < 1 {
-			res.Status = 400
-			res.Message = "Ada nama yang kosong"
-			return res
+			if len([]rune(val[0])) < 1 {
+				res.Status = 400
+				res.Message = "Ada nama yang kosong"
+				return res
+			}
+			// if len([]rune(val[1])) < 1 {
+			// 	res.Status = 400
+			// 	res.Message = "Ada nisn/nis yang kosong"
+			// 	return res
+			// }
+			if len([]rune(val[2])) < 1 {
+				res.Status = 400
+				res.Message = "Ada nomer kartu yang kosong"
+				return res
+			}
+
+			nisn_nis := strings.Split(val[1], "/")
+
+			member.Name = val[0]
+			if len(nisn_nis) == 2 {
+				member.NIS = strings.Trim(nisn_nis[0], " ")
+				member.NISN = strings.Trim(nisn_nis[1], " ")
+			}
+			member.Code = strings.Trim(val[2], " ")
+			member.NBM = strings.Trim(val[3], " ")
+			member.ClassID = int_class_id
+
+			members = append(members, member)
 		}
-		if len([]rune(val[1])) < 1 {
-			res.Status = 400
-			res.Message = "Ada nisn/nis yang kosong"
-			return res
-		}
-		if len([]rune(val[2])) < 1 {
-			res.Status = 400
-			res.Message = "Ada nisn/nis yang kosong"
-			return res
-		}
-
-		nisn_nis := strings.Split(val[1], "/")
-
-		if len(nisn_nis) != 2 {
-			res.Status = 400
-			res.Message = "format nis/nisn salah " + val[1]
-			return res
-		}
-
-		member.Name = val[0]
-		member.NIS = strings.Trim(nisn_nis[0], " ")
-		member.NISN = strings.Trim(nisn_nis[1], " ")
-		member.Code = strings.Trim(val[2], " ")
-		member.ClassID = int_class_id
-
-		members = append(members, member)
 	}
 
 	if len(members) == 0 {

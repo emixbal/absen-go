@@ -12,6 +12,7 @@ type Member struct {
 	Name     string `json:"name" gorm:"size:100"`
 	NISN     string `json:"nisn" gorm:"size:10"`
 	NIS      string `json:"nis" gorm:"size:10"`
+	NBM      string `json:"nbm" gorm:"size:10"`
 	Code     string `json:"code" gorm:"size:20"`
 	Class    Class  `gorm:"constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT;"`
 	ClassID  int    `json:"class_id"`
