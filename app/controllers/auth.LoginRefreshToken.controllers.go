@@ -36,18 +36,19 @@ func LoginWithRefrehToken(c *fiber.Ctx) error {
 	db := config.GetDBInstance()
 
 	if res := db.Preload("Role").Where("email = ?", p.Email).First(&user); res.RowsAffected <= 0 {
-		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+		return c.Status(200).JSON(fiber.Map{
 			"error":   true,
-			"message": "Invalid Email!",
+			"message": "Email Tidak Terdaftar!",
 		})
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(p.Password)); err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+		return c.Status(200).JSON(fiber.Map{
 			"error":   true,
-			"message": "Password is incorrect!",
+			"message": "Password Salah!",
 		})
 	}
+
 	userClaim.Issuer = utils.UUIDv4()
 	userClaim.Id = int(user.ID)
 	userClaim.Email = user.Email
