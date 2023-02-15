@@ -7,11 +7,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// recap-student-attendance
+// recap-member-attendance
 
-func RecapStudentAttendance(app *fiber.App) {
-	IsAuthenticated := app.Group("/recap-student-attendance", middlewares.IsAuthenticated)
+func RecapMemberAttendance(app *fiber.App) {
+	IsAuthenticated := app.Group("/recap-member-attendance", middlewares.IsAuthenticated)
 
-	IsAuthenticated.Get("/:class_id/:year_month", controllers.RecapStudentAttendance)
+	IsAuthenticated.Get("/:class_id/:year_month", controllers.RecapMemberAttendance)
 
 }

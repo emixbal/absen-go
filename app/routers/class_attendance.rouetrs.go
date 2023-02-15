@@ -10,6 +10,6 @@ import (
 func ClassAttendance(app *fiber.App) {
 	r := app.Group("/class-attendance", middlewares.IsAuthenticated)
 
-	r.Post("/arrive", controllers.ClassAttendanceStudentArrive)
-	r.Post("/leave", controllers.ClassAttendanceStudentLeave)
+	r.Post("/arrive", controllers.ClassAttendanceMemberArrive)
+	r.Post("/leave", controllers.ClassAttendanceMemberLeave)
 }

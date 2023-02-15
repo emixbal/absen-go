@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-type Student struct {
+type Member struct {
 	MyGorm
 	Name     string `json:"name" gorm:"size:100"`
 	NISN     string `json:"nisn" gorm:"size:10"`
@@ -18,8 +18,8 @@ type Student struct {
 	IsActive bool   `json:"is_active,omitempty" gorm:"default:true"`
 }
 
-func FethAllStudents(limit int, offset int, class []string) Response {
-	type StudentResult struct {
+func FethAllMembers(limit int, offset int, class []string) Response {
+	type MemberResult struct {
 		ID        string `json:"id"`
 		Name      string `json:"name"`
 		NIS       string `json:"nis"`
@@ -30,7 +30,7 @@ func FethAllStudents(limit int, offset int, class []string) Response {
 		IsActive  bool   `json:"is_active"`
 	}
 
-	var sudentsResult []StudentResult
+	var sudentsResult []MemberResult
 	var res Response
 	var lr ListResponse
 	var total_data int64
@@ -38,12 +38,12 @@ func FethAllStudents(limit int, offset int, class []string) Response {
 
 	db := config.GetDBInstance()
 
-	query := db.Table("students").
-		Joins("left join classes on students.class_id = classes.id").
-		Select("students.id, students.name, students.nis, students.nisn, students.code, classes.name as class_name, classes.id as class_id, students.is_active").
-		Where("students.is_active = ?", true).
+	query := db.Table("members").
+		Joins("left join classes on members.class_id = classes.id").
+		Select("members.id, members.name, members.nis, members.nisn, members.code, classes.name as class_name, classes.id as class_id, members.is_active").
+		Where("members.is_active = ?", true).
 		Order("classes.id asc").
-		Order("students.name asc")
+		Order("members.name asc")
 
 	if len(class) > 0 {
 		query.Where("classes.id IN ?", class)

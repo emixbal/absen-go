@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func FetchAllStudents(c *fiber.Ctx) error {
+func FetchAllMembers(c *fiber.Ctx) error {
 	limit := 100
 	offset := 0
 	class_filter := []string{}
@@ -24,6 +24,6 @@ func FetchAllStudents(c *fiber.Ctx) error {
 		class_filter = strings.Split(c.Query("class"), ",")
 	}
 
-	result := models.FethAllStudents(limit, offset, class_filter)
+	result := models.FethAllMembers(limit, offset, class_filter)
 	return c.Status(result.Status).JSON(result)
 }

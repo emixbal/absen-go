@@ -10,7 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func StudentsUploadList(c *fiber.Ctx) error {
+func MembersUploadList(c *fiber.Ctx) error {
 	payload := struct {
 		ClassID string `json:"class_id" xml:"class_id" form:"class_id" validate:"required"`
 	}{}
@@ -30,12 +30,12 @@ func StudentsUploadList(c *fiber.Ctx) error {
 		})
 	}
 
-	file, err := c.FormFile("students_csv")
+	file, err := c.FormFile("members_csv")
 	if err != nil {
-		log.Println("err students_csv")
+		log.Println("err members_csv")
 		log.Println(err)
 		return c.Status(400).JSON(fiber.Map{
-			"message": "students_csv is required",
+			"message": "members_csv is required",
 		})
 	}
 
@@ -46,7 +46,7 @@ func StudentsUploadList(c *fiber.Ctx) error {
 	}
 
 	// Save file to root directory:
-	if err := c.SaveFile(file, fmt.Sprintf("./files/students_files_temp/%s", payload.ClassID+".csv")); err != nil {
+	if err := c.SaveFile(file, fmt.Sprintf("./files/members_files_temp/%s", payload.ClassID+".csv")); err != nil {
 		log.Println("err SaveFile")
 		log.Println(err)
 		return c.Status(500).JSON(fiber.Map{
@@ -54,9 +54,9 @@ func StudentsUploadList(c *fiber.Ctx) error {
 		})
 	}
 
-	result := models.StudentsUploadList(payload.ClassID)
+	result := models.MembersUploadList(payload.ClassID)
 
-	if err := os.Remove("./files/students_files_temp/" + payload.ClassID + ".csv"); err != nil {
+	if err := os.Remove("./files/members_files_temp/" + payload.ClassID + ".csv"); err != nil {
 		log.Println("err remove temp")
 		log.Println(err)
 		return c.Status(500).JSON(fiber.Map{

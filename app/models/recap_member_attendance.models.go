@@ -10,25 +10,25 @@ import (
 	"time"
 )
 
-func RecapStudentAttendance(class_id, year_month string) Response {
-	type StudentAttendance struct {
+func RecapMemberAttendance(class_id, year_month string) Response {
+	type MemberAttendance struct {
 		AttendanceID int       `json:"attendance_id"`
 		Date         time.Time `json:"date"`
 		Arrive       time.Time `json:"arrive"`
 		Leave        time.Time `json:"leave"`
 	}
-	type StudentResult struct {
-		ID          string              `json:"id"`
-		Name        string              `json:"name"`
-		NIS         string              `json:"nis"`
-		NISN        string              `json:"nisn"`
-		Code        string              `json:"code"`
-		Attendances []StudentAttendance `json:"attendances"`
+	type MemberResult struct {
+		ID          string             `json:"id"`
+		Name        string             `json:"name"`
+		NIS         string             `json:"nis"`
+		NISN        string             `json:"nisn"`
+		Code        string             `json:"code"`
+		Attendances []MemberAttendance `json:"attendances"`
 	}
 
 	var res Response
-	var sudent_result StudentResult
-	var sudents_result []StudentResult
+	var sudent_result MemberResult
+	var sudents_result []MemberResult
 	var class_attendances []ClassAttendance
 
 	year_month_splited := strings.Split(year_month, "-")
@@ -51,41 +51,41 @@ func RecapStudentAttendance(class_id, year_month string) Response {
 		return res
 	}
 
-	rows_fetch_student, fetch_student_err := db.Table("students").
-		Select("students.id, students.name, students.nis, students.nisn, students.code").
-		Where("students.class_id = ?", class_id).
-		Order("students.name asc").Rows()
+	rows_fetch_member, fetch_member_err := db.Table("members").
+		Select("members.id, members.name, members.nis, members.nisn, members.code").
+		Where("members.class_id = ?", class_id).
+		Order("members.name asc").Rows()
 
-	defer rows_fetch_student.Close()
+	defer rows_fetch_member.Close()
 
-	if fetch_student_err != nil {
+	if fetch_member_err != nil {
 		log.Println("Err fetching data")
-		log.Println(fetch_student_err)
+		log.Println(fetch_member_err)
 
 		res.Status = http.StatusInternalServerError
-		res.Message = "Err fetching students data"
+		res.Message = "Err fetching members data"
 		return res
 	}
 
-	for rows_fetch_student.Next() {
-		if err := rows_fetch_student.Scan(&sudent_result.ID, &sudent_result.Name, &sudent_result.NIS, &sudent_result.NISN, &sudent_result.Code); err != nil {
-			log.Panicln("Err scan students")
+	for rows_fetch_member.Next() {
+		if err := rows_fetch_member.Scan(&sudent_result.ID, &sudent_result.Name, &sudent_result.NIS, &sudent_result.NISN, &sudent_result.Code); err != nil {
+			log.Panicln("Err scan members")
 			res.Status = http.StatusInternalServerError
-			res.Message = "Err scan students"
+			res.Message = "Err scan members"
 			return res
 		}
 
-		var cases []ClassAttendanceStudent
+		var cases []ClassAttendanceMember
 		for _, class_attendance := range class_attendances {
-			var cas ClassAttendanceStudent
-			db.Preload("ClassAttendance").Where("class_attendance_id = ?", class_attendance.ID).Where("student_id = ?", sudent_result.ID).Take(&cas)
+			var cas ClassAttendanceMember
+			db.Preload("ClassAttendance").Where("class_attendance_id = ?", class_attendance.ID).Where("member_id = ?", sudent_result.ID).Take(&cas)
 
 			cases = append(cases, cas)
 		}
 
-		var arr_cas []StudentAttendance
+		var arr_cas []MemberAttendance
 		for _, val := range cases {
-			var cas StudentAttendance
+			var cas MemberAttendance
 
 			cas.AttendanceID = val.ClassAttendanceID
 			cas.Arrive = val.Arrive

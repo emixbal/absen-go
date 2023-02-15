@@ -12,10 +12,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func StudentsUploadList(class_id string) Response {
+func MembersUploadList(class_id string) Response {
 	var res Response
-	var students []Student
-	var student Student
+	var members []Member
+	var member Member
 	var class Class
 
 	db := config.GetDBInstance()
@@ -37,7 +37,7 @@ func StudentsUploadList(class_id string) Response {
 		return res
 	}
 
-	if result := db.Where("class_id = ?", int_class_id).Find(&students); result.Error != nil {
+	if result := db.Where("class_id = ?", int_class_id).Find(&members); result.Error != nil {
 		log.Print("error check class is empty")
 		log.Print(result.Error)
 
@@ -46,13 +46,13 @@ func StudentsUploadList(class_id string) Response {
 		return res
 	}
 
-	if len(students) > 0 {
+	if len(members) > 0 {
 		res.Status = 400
 		res.Message = "kelas tidak kosong"
 		return res
 	}
 
-	file, err := os.Open("./files/students_files_temp/" + class_id + ".csv")
+	file, err := os.Open("./files/members_files_temp/" + class_id + ".csv")
 	if err != nil {
 		log.Println(err)
 		res.Status = 500
@@ -96,33 +96,33 @@ func StudentsUploadList(class_id string) Response {
 			return res
 		}
 
-		student.Name = val[0]
-		student.NIS = strings.Trim(nisn_nis[0], " ")
-		student.NISN = strings.Trim(nisn_nis[1], " ")
-		student.Code = strings.Trim(val[2], " ")
-		student.ClassID = int_class_id
+		member.Name = val[0]
+		member.NIS = strings.Trim(nisn_nis[0], " ")
+		member.NISN = strings.Trim(nisn_nis[1], " ")
+		member.Code = strings.Trim(val[2], " ")
+		member.ClassID = int_class_id
 
-		students = append(students, student)
+		members = append(members, member)
 	}
 
-	if len(students) == 0 {
+	if len(members) == 0 {
 		res.Status = 400
 		res.Message = "File kosong"
 		return res
 	}
 
-	if result := db.Create(&students); result.Error != nil {
-		log.Print("error create batch students")
+	if result := db.Create(&members); result.Error != nil {
+		log.Print("error create batch members")
 		log.Print(result.Error)
 
 		res.Status = 500
-		res.Message = "error create batch students"
+		res.Message = "error create batch members"
 		return res
 	}
 
 	res.Status = 200
 	res.Message = "ok"
-	res.Data = students
+	res.Data = members
 
 	return res
 }

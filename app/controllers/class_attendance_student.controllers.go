@@ -10,10 +10,10 @@ import (
 	"github.com/gookit/validate"
 )
 
-func ClassAttendanceStudentArrive(c *fiber.Ctx) error {
+func ClassAttendanceMemberArrive(c *fiber.Ctx) error {
 	var res models.Response
 
-	p := new(requests.AddClassAttendanceStudent)
+	p := new(requests.AddClassAttendanceMember)
 	if err := c.BodyParser(p); err != nil {
 		log.Println(err)
 		res.Status = http.StatusBadRequest
@@ -30,14 +30,14 @@ func ClassAttendanceStudentArrive(c *fiber.Ctx) error {
 		return c.Status(res.Status).JSON(res)
 	}
 
-	result, _ := models.ClassAttendanceStudentArrive(p.Code)
+	result, _ := models.ClassAttendanceMemberArrive(p.Code)
 	return c.Status(result.Status).JSON(result)
 }
 
-func ClassAttendanceStudentLeave(c *fiber.Ctx) error {
+func ClassAttendanceMemberLeave(c *fiber.Ctx) error {
 	var res models.Response
 
-	p := new(requests.AddClassAttendanceStudent)
+	p := new(requests.AddClassAttendanceMember)
 	if err := c.BodyParser(p); err != nil {
 		log.Println(err)
 		res.Status = http.StatusBadRequest
@@ -54,6 +54,6 @@ func ClassAttendanceStudentLeave(c *fiber.Ctx) error {
 		return c.Status(res.Status).JSON(res)
 	}
 
-	result, _ := models.ClassAttendanceStudentLeave(p.Code)
+	result, _ := models.ClassAttendanceMemberLeave(p.Code)
 	return c.Status(result.Status).JSON(result)
 }
