@@ -56,6 +56,7 @@ func LoginWithRefrehToken(c *fiber.Ctx) error {
 	accessToken, refreshToken := models.GenerateTokens(&userClaim, false)
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message":       "ok",
 		"access_token":  accessToken,
 		"refresh_token": refreshToken,
 	})
