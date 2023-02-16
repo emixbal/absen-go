@@ -12,20 +12,19 @@ import (
 )
 
 type ClassAttendanceMember struct {
-	ID                uint            `json:"id" gorm:"primarykey"`
-	ClassAttendance   ClassAttendance `gorm:"constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT;"`
-	ClassAttendanceID int             `json:"class_attendance_id"`
-	Member            Member          `gorm:"constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT;"`
-	MemberID          int             `json:"member_id"`
-	Arrive            time.Time       `json:"arrive" `
-	Leave             time.Time       `json:"leave" gorm:"default:null"`
+	ID       uint      `json:"id" gorm:"primarykey"`
+	Class    Class     `gorm:"constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT;"`
+	ClassID  int       `json:"class_id"`
+	Member   Member    `gorm:"constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT;"`
+	MemberID int       `json:"member_id"`
+	Arrive   time.Time `json:"arrive" `
+	Leave    time.Time `json:"leave" gorm:"default:null"`
 }
 
 func ClassAttendanceMemberArrive(code string) (Response, error) {
 	var res Response
 	var member Member
-	var class_attendance ClassAttendance
-	var cas ClassAttendanceMember
+	var cam ClassAttendanceMember
 	var time_now = time.Now()
 
 	db := config.GetDBInstance()
@@ -39,31 +38,18 @@ func ClassAttendanceMemberArrive(code string) (Response, error) {
 		}
 	}
 
-	// cek apakah ada jadwal kelas hari ini
-	today := time.Now().UTC().Format("2006-01-02")
 	if result := db.
-		Where("class_id = ?", member.ClassID).
-		Where("date = ?", today).
-		First(&class_attendance); result.Error != nil {
-		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
-			res.Status = http.StatusBadRequest
-			res.Message = "class not found."
-			return res, nil
-		}
-	}
-
-	if result := db.
-		Where("class_attendance_id = ?", class_attendance.ID).
+		Where("DATE(arrive) = ?", time_now.UTC().Format("2006-01-02")).
 		Where("member_id = ?", member.ID).
 		First(&ClassAttendanceMember{}); result.Error != nil {
 		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
 			/**
 			Jika belum absen, register simpan absen baru hari ini
 			*/
-			cas.ClassAttendanceID = int(class_attendance.ID)
-			cas.MemberID = int(member.ID)
-			cas.Arrive = time_now
-			if result := db.Create(&cas); result.Error != nil {
+			cam.MemberID = int(member.ID)
+			cam.Arrive = time_now
+			cam.ClassID = member.ClassID
+			if result := db.Create(&cam); result.Error != nil {
 				log.Println("error Create AddClassAttendanceMember")
 				log.Println(result.Error)
 
@@ -78,7 +64,7 @@ func ClassAttendanceMemberArrive(code string) (Response, error) {
 				"member_name":  member.Name,
 				"nisn":         member.NISN,
 				"class":        member.Class.Name,
-				"time_arrival": time_now.Format("15:04:05"),
+				"time_arrival": cam.Arrive.Format("15:04:05"),
 			}
 			return res, nil
 		}
@@ -96,8 +82,8 @@ func ClassAttendanceMemberArrive(code string) (Response, error) {
 func ClassAttendanceMemberLeave(code string) (Response, error) {
 	var res Response
 	var member Member
-	var class_attendance ClassAttendance
-	var cas ClassAttendanceMember
+	// var class_attendance ClassAttendance
+	var cam ClassAttendanceMember
 	var time_now = time.Now()
 
 	db := config.GetDBInstance()
@@ -110,23 +96,10 @@ func ClassAttendanceMemberLeave(code string) (Response, error) {
 		}
 	}
 
-	today := time.Now().UTC().Format("2006-01-02")
-
 	if result := db.
-		Where("class_id = ?", member.ClassID).
-		Where("date = ?", today).
-		First(&class_attendance); result.Error != nil {
-		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
-			res.Status = http.StatusBadRequest
-			res.Message = "class not found."
-			return res, nil
-		}
-	}
-
-	if result := db.
-		Where("class_attendance_id = ?", class_attendance.ID).
+		Where("DATE(arrive) = ?", time_now.UTC().Format("2006-01-02")).
 		Where("member_id = ?", member.ID).
-		First(&cas); result.Error != nil {
+		First(&cam); result.Error != nil {
 		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
 			res.Status = http.StatusBadRequest
 			res.Message = "Belum absen masuk."
@@ -134,8 +107,8 @@ func ClassAttendanceMemberLeave(code string) (Response, error) {
 		}
 	}
 
-	cas.Leave = time_now
-	if result := db.Save(&cas); result.Error != nil {
+	cam.Leave = time_now
+	if result := db.Save(&cam); result.Error != nil {
 		log.Println("error Update ClassAttendanceMemberLeave")
 		log.Println(result.Error)
 
@@ -150,7 +123,7 @@ func ClassAttendanceMemberLeave(code string) (Response, error) {
 		"member_name":  member.Name,
 		"nisn":         member.NISN,
 		"class":        member.Class.Name,
-		"time_leaving": time_now.Format("15:04:05"),
+		"time_leaving": cam.Leave.Format("15:04:05"),
 	}
 	return res, nil
 }
