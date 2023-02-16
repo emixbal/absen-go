@@ -79,17 +79,11 @@ func MembersUploadList(class_id string) Response {
 				res.Message = "Format kolom salah. Harus berformat:Nama,NIS/NISN,NomerKartu,NBM"
 				return res
 			}
-
 			if len([]rune(val[0])) < 1 {
 				res.Status = 400
 				res.Message = "Ada nama yang kosong"
 				return res
 			}
-			// if len([]rune(val[1])) < 1 {
-			// 	res.Status = 400
-			// 	res.Message = "Ada nisn/nis yang kosong"
-			// 	return res
-			// }
 			if len([]rune(val[2])) < 1 {
 				res.Status = 400
 				res.Message = "Ada nomer kartu yang kosong"
