@@ -19,7 +19,7 @@ type Member struct {
 	IsActive bool   `json:"is_active,omitempty" gorm:"default:true"`
 }
 
-func FethAllMembers(limit int, offset int, class []string) Response {
+func FethAllMembers(limit int, offset int, class []string, filter_id string) Response {
 	type MemberResult struct {
 		ID        string `json:"id"`
 		Name      string `json:"name"`
@@ -49,6 +49,13 @@ func FethAllMembers(limit int, offset int, class []string) Response {
 
 	if len(class) > 0 {
 		query.Where("classes.id IN ?", class)
+	}
+
+	if filter_id != "" {
+		query.Where("nis = ?", filter_id).
+			Or("nisn = ?", filter_id).
+			Or("nbm = ?", filter_id).
+			Or("code = ?", filter_id)
 	}
 
 	query.Count(&total_data)
