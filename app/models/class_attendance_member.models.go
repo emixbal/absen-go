@@ -24,7 +24,6 @@ type ClassAttendanceMember struct {
 func ClassAttendanceMemberArrive(code string) (Response, error) {
 	var res Response
 	var member Member
-	// var class_attendance ClassAttendance
 	var cam ClassAttendanceMember
 	var time_now = time.Now()
 
