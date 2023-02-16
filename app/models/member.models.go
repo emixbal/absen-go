@@ -52,10 +52,11 @@ func FethAllMembers(limit int, offset int, class []string, filter_id string) Res
 	}
 
 	if filter_id != "" {
-		query.Where("nis = ?", filter_id).
-			Or("nisn = ?", filter_id).
-			Or("nbm = ?", filter_id).
-			Or("code = ?", filter_id)
+		file_qry := "%" + filter_id + "%"
+		query.Where("nis LIKE ?", file_qry).
+			Or("nisn LIKE ?", file_qry).
+			Or("nbm LIKE ?", file_qry).
+			Or("code LIKE ?", file_qry)
 	}
 
 	query.Count(&total_data)
