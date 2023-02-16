@@ -66,7 +66,7 @@ func RecapMemberAttendance(class_id, year_month string) Response {
 			return res
 		}
 		db.
-			Where("class_id = ?", class_id).
+			// Where("class_id = ?", class_id).
 			Where("member_id = ?", member_result.ID).
 			Where("arrive > ?", start_month).Where("arrive < ?", end_month).
 			Take(&cams)

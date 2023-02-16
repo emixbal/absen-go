@@ -12,9 +12,9 @@ import (
 )
 
 type ClassAttendanceMember struct {
-	ID       uint      `json:"id" gorm:"primarykey"`
-	Class    Class     `gorm:"constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT;"`
-	ClassID  int       `json:"class_id"`
+	ID uint `json:"id" gorm:"primarykey"`
+	// Class    Class     `gorm:"constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT;"`
+	// ClassID  int       `json:"class_id"`
 	Member   Member    `gorm:"constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT;"`
 	MemberID int       `json:"member_id"`
 	Arrive   time.Time `json:"arrive" `
@@ -48,7 +48,7 @@ func ClassAttendanceMemberArrive(code string) (Response, error) {
 			*/
 			cam.MemberID = int(member.ID)
 			cam.Arrive = time_now
-			cam.ClassID = member.ClassID
+			// cam.ClassID = member.ClassID
 			if result := db.Create(&cam); result.Error != nil {
 				log.Println("error Create AddClassAttendanceMember")
 				log.Println(result.Error)
