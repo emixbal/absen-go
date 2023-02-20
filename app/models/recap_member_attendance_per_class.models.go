@@ -10,22 +10,22 @@ import (
 	"time"
 )
 
-func RecapMemberAttendancePerClass(class_id, year_month string) Response {
-	type MemberAttendanceResult struct {
-		Date   time.Time `json:"date"`
-		Arrive time.Time `json:"arrive"`
-		Leave  time.Time `json:"leave"`
-	}
-	type MemberResult struct {
-		ID          string                   `json:"id"`
-		Name        string                   `json:"name"`
-		NIS         string                   `json:"nis"`
-		NISN        string                   `json:"nisn"`
-		NBM         string                   `json:"nbm"`
-		Code        string                   `json:"code"`
-		Attendances []MemberAttendanceResult `json:"attendances"`
-	}
+type MemberAttendanceResult struct {
+	Date   time.Time `json:"date"`
+	Arrive time.Time `json:"arrive"`
+	Leave  time.Time `json:"leave"`
+}
+type MemberResult struct {
+	ID          uint                     `json:"id"`
+	Name        string                   `json:"name"`
+	NIS         string                   `json:"nis"`
+	NISN        string                   `json:"nisn"`
+	NBM         string                   `json:"nbm"`
+	Code        string                   `json:"code"`
+	Attendances []MemberAttendanceResult `json:"attendances"`
+}
 
+func RecapMemberAttendancePerClass(class_id, year_month string) Response {
 	var res Response
 	var member_result MemberResult
 	var members_result []MemberResult
@@ -66,7 +66,6 @@ func RecapMemberAttendancePerClass(class_id, year_month string) Response {
 			return res
 		}
 		db.
-			// Where("class_id = ?", class_id).
 			Where("member_id = ?", member_result.ID).
 			Where("arrive > ?", start_month).Where("arrive < ?", end_month).
 			Take(&cams)
