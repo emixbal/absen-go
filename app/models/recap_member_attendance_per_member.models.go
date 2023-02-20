@@ -15,8 +15,9 @@ import (
 func RecapMemberAttendancePerMember(member_id, year_month string) Response {
 	var res Response
 	var member Member
-	var cams []ClassAttendanceMember
+	var cam ClassAttendanceMember
 	var member_result MemberResult
+	var attendance MemberAttendanceResult
 
 	year_month_splited := strings.Split(year_month, "-")
 	int_month, _ := strconv.Atoi(year_month_splited[1])
@@ -40,18 +41,19 @@ func RecapMemberAttendancePerMember(member_id, year_month string) Response {
 		return res
 	}
 
-	db.
-		Where("member_id = ?", member.ID).
-		Where("arrive > ?", start_month).Where("arrive < ?", end_month).
-		Take(&cams)
-
 	var arr_attendances []MemberAttendanceResult
-	for _, val := range cams {
-		var attendance MemberAttendanceResult
+	for d := start_month; !d.After(end_month); d = d.AddDate(0, 0, 1) {
+		cam = ClassAttendanceMember{}
+		db.
+			Where("member_id = ?", member.ID).
+			Where("arrive > ? AND arrive < ?", d, d.Add(24*time.Hour)).
+			First(&cam)
 
-		attendance.Arrive = val.Arrive
-		attendance.Leave = val.Leave
-		attendance.Date = val.Arrive
+		fmt.Println(d.Format("2006-01-02"))
+
+		attendance.Date = d
+		attendance.Arrive = cam.Arrive
+		attendance.Leave = cam.Leave
 
 		arr_attendances = append(arr_attendances, attendance)
 	}
