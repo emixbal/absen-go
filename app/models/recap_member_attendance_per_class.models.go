@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func RecapMemberAttendance(class_id, year_month string) Response {
+func RecapMemberAttendancePerClass(class_id, year_month string) Response {
 	type MemberAttendanceResult struct {
 		Date   time.Time `json:"date"`
 		Arrive time.Time `json:"arrive"`
