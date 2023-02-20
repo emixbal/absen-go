@@ -22,6 +22,7 @@ type MemberResult struct {
 	NISN        string                   `json:"nisn"`
 	NBM         string                   `json:"nbm"`
 	Code        string                   `json:"code"`
+	ClassName   string                   `json:"class_name"`
 	Attendances []MemberAttendanceResult `json:"attendances"`
 }
 

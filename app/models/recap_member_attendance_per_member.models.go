@@ -29,7 +29,7 @@ func RecapMemberAttendancePerMember(member_id, year_month string) Response {
 
 	db := config.GetDBInstance()
 
-	if result := db.Where("is_active = ?", true).First(&member, member_id); result.Error != nil {
+	if result := db.Preload("Class").Where("is_active = ?", true).First(&member, member_id); result.Error != nil {
 		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
 			res.Status = http.StatusOK
 			res.Message = "Member tidak ditemukan"
@@ -63,6 +63,7 @@ func RecapMemberAttendancePerMember(member_id, year_month string) Response {
 	member_result.NIS = member.NIS
 	member_result.NISN = member.NISN
 	member_result.NBM = member.NBM
+	member_result.ClassName = member.Class.Name
 	member_result.Attendances = arr_attendances
 
 	res.Status = http.StatusOK
