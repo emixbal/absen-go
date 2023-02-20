@@ -65,6 +65,8 @@ func RecapMemberAttendancePerMember(member_id, year_month string) Response {
 	member_result.NBM = member.NBM
 	member_result.Attendances = arr_attendances
 
+	res.Status = http.StatusOK
+	res.Message = "ok"
 	res.Data = member_result
 
 	return res
