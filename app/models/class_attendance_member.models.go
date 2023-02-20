@@ -12,9 +12,7 @@ import (
 )
 
 type ClassAttendanceMember struct {
-	ID uint `json:"id" gorm:"primarykey"`
-	// Class    Class     `gorm:"constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT;"`
-	// ClassID  int       `json:"class_id"`
+	ID       uint      `json:"id" gorm:"primarykey"`
 	Member   Member    `gorm:"constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT;"`
 	MemberID int       `json:"member_id"`
 	Arrive   time.Time `json:"arrive" `
