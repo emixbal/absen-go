@@ -20,6 +20,7 @@ func Init(app *fiber.App) {
 	Member(app)
 	RecapMemberAttendance(app)
 	Class(app)
+	Reset(app)
 
 	Dev(app)
 }
