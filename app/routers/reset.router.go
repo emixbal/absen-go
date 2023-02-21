@@ -12,4 +12,5 @@ func Reset(app *fiber.App) {
 
 	IsSuperadmin := r.Group("/", middlewares.IsSuperadmin)
 	IsSuperadmin.Post("/attendance", controllers.ResetAttendance)
+	IsSuperadmin.Post("/member", controllers.ResetMember)
 }
