@@ -2,9 +2,12 @@ package models
 
 import (
 	"absen-go/config"
+	"errors"
 	"log"
 	"math"
 	"net/http"
+
+	"gorm.io/gorm"
 )
 
 type Member struct {
@@ -89,5 +92,47 @@ func FethAllMembers(limit int, offset int, class []string, filter_id string) Res
 	res.Status = http.StatusOK
 	res.Message = "ok"
 	res.Data = lr
+	return res
+}
+
+func MemberUpdate(member_payload *Member, member_id string) Response {
+	var res Response
+	var member Member
+
+	db := config.GetDBInstance()
+	result := db.Where("id = ?", member_id).Take(&member)
+	if result.Error != nil {
+		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
+			res.Status = http.StatusOK
+			res.Message = "can't find member record"
+			return res
+		}
+
+		log.Panicln("db.Take err")
+		log.Panicln(result.Error)
+		res.Status = http.StatusInternalServerError
+		res.Message = "something went wrong"
+		return res
+	}
+
+	member.ClassID = member_payload.ClassID
+	member.Name = member_payload.Name
+	member.NIS = member_payload.NIS
+	member.NISN = member_payload.NISN
+	member.NBM = member_payload.NBM
+	member.Code = member_payload.Code
+
+	if result := db.Save(&member); result.Error != nil {
+		log.Panicln("db.Save err")
+		log.Panicln(result.Error)
+		res.Status = http.StatusInternalServerError
+		res.Message = "something went wrong"
+		return res
+	}
+
+	res.Status = http.StatusOK
+	res.Message = "success"
+	res.Data = member
+
 	return res
 }

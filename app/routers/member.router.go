@@ -12,4 +12,5 @@ func Member(app *fiber.App) {
 
 	IsAuthenticated.Get("/", controllers.FetchAllMembers)
 	IsAuthenticated.Post("/", controllers.MembersUploadList)
+	IsAuthenticated.Put("/:member_id", controllers.MembersUpdate)
 }
