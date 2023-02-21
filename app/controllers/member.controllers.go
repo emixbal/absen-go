@@ -109,5 +109,5 @@ func MembersUpdate(c *fiber.Ctx) error {
 	member.NBM = p.NBM
 
 	result := models.MemberUpdate(&member, member_id)
-	return c.Status(result.Status).JSON(member)
+	return c.Status(result.Status).JSON(result)
 }

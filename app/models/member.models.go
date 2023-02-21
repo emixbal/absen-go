@@ -131,7 +131,7 @@ func MemberUpdate(member_payload *Member, member_id string) Response {
 	}
 
 	res.Status = http.StatusOK
-	res.Message = "success"
+	res.Message = "ok"
 	res.Data = member
 
 	return res
