@@ -3,6 +3,7 @@ package models
 import (
 	"absen-go/config"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -23,9 +24,35 @@ func ClassAttendanceMemberArrive(code string) (Response, error) {
 	var res Response
 	var member Member
 	var cam ClassAttendanceMember
+	var routine_offday RoutineOffday
+	var offday Offday
+
 	var time_now = time.Now()
 
 	db := config.GetDBInstance()
+
+	// cek apakah hari kerja ?
+	day_name := time_now.Weekday().String()
+	if result := db.Where("day = ?", day_name).Take(&routine_offday); result.Error != nil {
+		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
+			fmt.Println("===== hari masuk =====")
+		}
+	} else {
+		res.Status = http.StatusBadRequest
+		res.Message = "Bukan hari kerja"
+		return res, nil
+	}
+
+	// cek apakah hari libur ?
+	if result := db.Where("DATE(date) = ?", time_now.Format("2006-01-02")).Take(&offday); result.Error != nil {
+		if is_notfound := errors.Is(result.Error, gorm.ErrRecordNotFound); is_notfound {
+			fmt.Println("===== bukan hari libur =====")
+		}
+	} else {
+		res.Status = http.StatusBadRequest
+		res.Message = "Hari libur"
+		return res, nil
+	}
 
 	// cek apakah member exist
 	if result := db.Preload("Class").Where("code = ?", code).First(&member); result.Error != nil {
