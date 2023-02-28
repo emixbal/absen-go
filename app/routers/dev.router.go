@@ -38,11 +38,13 @@ func Dev(app *fiber.App) {
 
 		db := config.GetDBInstance()
 
-		for i := 151; i < 181; i++ {
+		for i := 100001; i <= 1000000; i++ {
 			member.ID = uint(i)
 			member.Name = RandStringBytes(6)
 			member.NISN = RandNumberBytes(10)
-			member.ClassID = 6
+			member.NIS = RandNumberBytes(10)
+			member.Code = RandNumberBytes(10)
+			member.ClassID = 2
 
 			if result := db.Create(&member); result.Error != nil {
 				log.Print("error CreateAUser")
@@ -59,7 +61,6 @@ func Dev(app *fiber.App) {
 
 		res.Status = http.StatusOK
 		res.Message = "ok"
-		res.Data = members
 
 		return c.Status(res.Status).JSON(res)
 	})
