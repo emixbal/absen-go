@@ -16,7 +16,7 @@ type Member struct {
 	NISN     string `json:"nisn" gorm:"size:10"`
 	NIS      string `json:"nis" gorm:"size:10"`
 	NBM      string `json:"nbm" gorm:"size:10"`
-	Code     string `json:"code" gorm:"size:20"`
+	Code     string `json:"code" gorm:"size:20, index:idx_code"`
 	Class    Class  `gorm:"constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT;"`
 	ClassID  int    `json:"class_id"`
 	IsActive bool   `json:"is_active,omitempty" gorm:"default:true"`
