@@ -11,9 +11,11 @@ import (
 )
 
 type MemberAttendanceResult struct {
-	Date   time.Time `json:"date"`
-	Arrive time.Time `json:"arrive"`
-	Leave  time.Time `json:"leave"`
+	Date time.Time `json:"date"`
+	// Arrive time.Time `json:"arrive"`
+	// Leave  time.Time `json:"leave"`
+	Arrive interface{} `json:"arrive"`
+	Leave  interface{} `json:"leave"`
 }
 type MemberResult struct {
 	ID          uint                     `json:"id"`
@@ -74,9 +76,15 @@ func RecapMemberAttendancePerClass(class_id, year_month string) Response {
 		for _, val := range cams {
 			var attendance MemberAttendanceResult
 
-			attendance.Arrive = val.Arrive
-			attendance.Leave = val.Leave
 			attendance.Date = val.Arrive
+
+			attendance.Arrive = val.Arrive
+
+			if val.Leave.Before(val.Arrive) {
+				attendance.Leave = nil
+			} else {
+				attendance.Leave = val.Leave
+			}
 
 			arr_attendances = append(arr_attendances, attendance)
 		}
