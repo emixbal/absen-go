@@ -69,7 +69,7 @@ func FethAllMembers(limit int, offset int, class []string, filter_id string) Res
 		Offset(offset * limit).
 		Scan(&sudentsResult)
 
-	total_records := result.RowsAffected
+	data_showed := result.RowsAffected
 
 	if result.Error != nil {
 		log.Println("Err fetching data")
@@ -84,7 +84,7 @@ func FethAllMembers(limit int, offset int, class []string, filter_id string) Res
 
 	lr.Records = sudentsResult
 	lr.TotalData = total_data
-	lr.TotalRecords = total_records
+	lr.DataShowed = data_showed
 	lr.TotalPage = total_page
 	lr.Page = offset + 1
 	lr.PerPage = limit
