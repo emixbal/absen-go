@@ -16,15 +16,22 @@ type MemberAttendanceResult struct {
 	Leave      interface{} `json:"leave"`
 	IsAttended bool        `json:"is_attended"`
 }
+
+type AttendanceSummary struct {
+	TotalAbsence uint `json:"total_absence"`
+	TotalDay     uint `json:"total_day"`
+}
+
 type MemberResult struct {
-	ID          uint                     `json:"id"`
-	Name        string                   `json:"name"`
-	NIS         string                   `json:"nis"`
-	NISN        string                   `json:"nisn"`
-	NBM         string                   `json:"nbm"`
-	Code        string                   `json:"code"`
-	ClassName   string                   `json:"class_name"`
-	Attendances []MemberAttendanceResult `json:"attendances"`
+	ID                uint                     `json:"id"`
+	Name              string                   `json:"name"`
+	NIS               string                   `json:"nis"`
+	NISN              string                   `json:"nisn"`
+	NBM               string                   `json:"nbm"`
+	Code              string                   `json:"code"`
+	ClassName         string                   `json:"class_name"`
+	Attendances       []MemberAttendanceResult `json:"attendances"`
+	AttendanceSummary AttendanceSummary        `json:"attendance_summary"`
 }
 
 func RecapMemberAttendancePerClass(class_id, year_month string) Response {

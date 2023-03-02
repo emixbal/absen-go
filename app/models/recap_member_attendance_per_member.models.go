@@ -18,6 +18,7 @@ func RecapMemberAttendancePerMember(member_id, year_month string) Response {
 	var cam ClassAttendanceMember
 	var member_result MemberResult
 	var attendance MemberAttendanceResult
+	var attendance_summary AttendanceSummary
 
 	year_month_splited := strings.Split(year_month, "-")
 	int_month, _ := strconv.Atoi(year_month_splited[1])
@@ -42,21 +43,37 @@ func RecapMemberAttendancePerMember(member_id, year_month string) Response {
 	}
 
 	var arr_attendances []MemberAttendanceResult
+	var total_absence = uint(0)
+	var total_day = uint(0)
 	for d := start_month; !d.After(end_month); d = d.AddDate(0, 0, 1) {
 		cam = ClassAttendanceMember{}
-		db.
+		result := db.
 			Where("member_id = ?", member.ID).
 			Where("arrive > ? AND arrive < ?", d, d.Add(24*time.Hour)).
 			First(&cam)
 
-		fmt.Println(d.Format("2006-01-02"))
-
 		attendance.Date = d
-		attendance.Arrive = cam.Arrive
-		attendance.Leave = cam.Leave
 
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			attendance.IsAttended = false
+			attendance.Arrive = nil
+			attendance.Leave = nil
+			total_absence++
+		} else {
+			attendance.IsAttended = true
+			attendance.Arrive = cam.Arrive
+			if cam.Leave.Before(cam.Arrive) {
+				attendance.Leave = nil
+			} else {
+				attendance.Leave = cam.Leave
+			}
+		}
+		total_day++
 		arr_attendances = append(arr_attendances, attendance)
 	}
+
+	attendance_summary.TotalAbsence = total_absence
+	attendance_summary.TotalDay = total_day
 
 	member_result.ID = member.ID
 	member_result.Name = member.Name
@@ -65,6 +82,7 @@ func RecapMemberAttendancePerMember(member_id, year_month string) Response {
 	member_result.NBM = member.NBM
 	member_result.ClassName = member.Class.Name
 	member_result.Attendances = arr_attendances
+	member_result.AttendanceSummary = attendance_summary
 
 	res.Status = http.StatusOK
 	res.Message = "ok"
