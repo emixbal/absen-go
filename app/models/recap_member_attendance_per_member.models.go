@@ -47,34 +47,71 @@ func RecapMemberAttendancePerMember(member_id, year_month string) Response {
 		return res
 	}
 
+	/**
+	FETCHING HARI LIBUR MINGGUAN START
+	*/
+	routine_offdays := []string{}
+	db.
+		Table("routine_offdays").
+		Select("routine_offdays.day").
+		Scan(&routine_offdays)
+	/**
+	FETCHING HARI LIBUR MINGGUAN END
+	*/
+	/**
+
+
+	FETCHING HARI LIBUR INSIDENTIL START
+	*/
+	offdays := []time.Time{}
+	db.
+		Table("offdays").
+		Select("offdays.date").
+		Scan(&offdays)
+	/**
+	FETCHING HARI LIBUR INSIDENTIL END
+	*/
+
 	var arr_attendances []MemberAttendanceResult
 	var total_absence = uint(0)
 	var total_day = uint(0)
+
 	for d := start_month; !d.After(end_month); d = d.AddDate(0, 0, 1) {
-		cam = ClassAttendanceMember{}
-		result := db.
-			Where("member_id = ?", member.ID).
-			Where("arrive > ? AND arrive < ?", d, d.Add(24*time.Hour)).
-			First(&cam)
-
-		attendance.Date = d
-
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			attendance.IsAttended = false
-			attendance.Arrive = nil
-			attendance.Leave = nil
-			total_absence++
+		if sliceOfStringContains(routine_offdays, d.Weekday().String()) { // check apakah hari d adalah hari libur mingguan?
+			fmt.Println("=====bukan hari masuk=====")
+			// sengaja dibuat gini, buat logging
 		} else {
-			attendance.IsAttended = true
-			attendance.Arrive = cam.Arrive
-			if cam.Leave.Before(cam.Arrive) {
-				attendance.Leave = nil
+			if sliceOfTimeContainDate(offdays, d) {
+				fmt.Println("=====hari libur=====")
+				// sengaja dibuat gini, buat logging
 			} else {
-				attendance.Leave = cam.Leave
+				cam = ClassAttendanceMember{}
+				result := db.
+					Where("member_id = ?", member.ID).
+					Where("arrive > ? AND arrive < ?", d, d.Add(24*time.Hour)).
+					First(&cam)
+
+				attendance.Date = d
+
+				if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+					attendance.IsAttended = false
+					attendance.Arrive = nil
+					attendance.Leave = nil
+					total_absence++
+				} else {
+					attendance.IsAttended = true
+					attendance.Arrive = cam.Arrive
+					if cam.Leave.Before(cam.Arrive) {
+						attendance.Leave = nil
+					} else {
+						attendance.Leave = cam.Leave
+					}
+				}
+				total_day++
+				arr_attendances = append(arr_attendances, attendance)
 			}
+
 		}
-		total_day++
-		arr_attendances = append(arr_attendances, attendance)
 	}
 
 	var sick_remark_result []RemarkResult
@@ -113,4 +150,24 @@ func RecapMemberAttendancePerMember(member_id, year_month string) Response {
 	res.Data = member_result
 
 	return res
+}
+
+func sliceOfStringContains(s []string, str string) bool {
+	for _, v := range s {
+		if v == str {
+			return true
+		}
+	}
+
+	return false
+}
+
+func sliceOfTimeContainDate(dates []time.Time, date time.Time) bool {
+	for _, d := range dates {
+		if d.Truncate(24 * time.Hour).Equal(date.Truncate(24 * time.Hour)) {
+			return true
+		}
+	}
+
+	return false
 }
