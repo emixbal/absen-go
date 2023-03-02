@@ -11,11 +11,10 @@ import (
 )
 
 type MemberAttendanceResult struct {
-	Date time.Time `json:"date"`
-	// Arrive time.Time `json:"arrive"`
-	// Leave  time.Time `json:"leave"`
-	Arrive interface{} `json:"arrive"`
-	Leave  interface{} `json:"leave"`
+	Date       time.Time   `json:"date"`
+	Arrive     interface{} `json:"arrive"`
+	Leave      interface{} `json:"leave"`
+	IsAttended bool        `json:"is_attended"`
 }
 type MemberResult struct {
 	ID          uint                     `json:"id"`
