@@ -13,6 +13,11 @@ import (
 )
 
 func RecapMemberAttendancePerMember(member_id, year_month string) Response {
+	type RemarkResult struct {
+		Date        string `json:"date"`
+		Description string `json:"description"`
+	}
+
 	var res Response
 	var member Member
 	var cam ClassAttendanceMember
@@ -72,8 +77,27 @@ func RecapMemberAttendancePerMember(member_id, year_month string) Response {
 		arr_attendances = append(arr_attendances, attendance)
 	}
 
+	var sick_remark_result []RemarkResult
+	var other_remark_result []RemarkResult
+	db.
+		Table("remarks").
+		Select("remarks.date, remarks.description").
+		Where("remarks.is_sick = ?", true).
+		Where("remarks.date > ? AND remarks.date < ?", start_month.Format("2006-01-02"), end_month.Format("2006-01-02")).
+		Scan(&sick_remark_result)
+
+	db.
+		Table("remarks").
+		Select("remarks.date, remarks.description").
+		Where("remarks.is_sick = ?", false).
+		Where("remarks.date > ? AND remarks.date < ?", start_month.Format("2006-01-02"), end_month.Format("2006-01-02")).
+		Scan(&other_remark_result)
+
 	attendance_summary.TotalAbsence = total_absence
 	attendance_summary.TotalDay = total_day
+	attendance_summary.TotalSickRemark = sick_remark_result
+	attendance_summary.TotalOtherkRemark = other_remark_result
+	attendance_summary.TotalAbsenceWithRemark = len(sick_remark_result) + len(other_remark_result)
 
 	member_result.ID = member.ID
 	member_result.Name = member.Name

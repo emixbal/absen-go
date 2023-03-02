@@ -18,8 +18,11 @@ type MemberAttendanceResult struct {
 }
 
 type AttendanceSummary struct {
-	TotalAbsence uint `json:"total_absence"`
-	TotalDay     uint `json:"total_day"`
+	TotalDay               uint        `json:"total_day"`
+	TotalAbsence           uint        `json:"total_absence"`
+	TotalAbsenceWithRemark int         `json:"total_absence_with_remark"`
+	TotalSickRemark        interface{} `json:"sick_remarks"`
+	TotalOtherkRemark      interface{} `json:"other_remarks"`
 }
 
 type MemberResult struct {
