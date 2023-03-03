@@ -17,25 +17,27 @@ type Offday struct {
 	Date time.Time `json:"date" gorm:"not null;type:date; index:idx_date"`
 }
 
-func OffdayAddNew(offday *Offday) Response {
+func OffdayAddNew(date time.Time) Response {
 	var res Response
+	var offday Offday
 	var count int64
 
 	db := config.GetDBInstance()
 
-	db.Find(&offday).Count(&count)
+	db.Where("date = ?", date.Format("2006-01-02")).Find(&offday).Count(&count)
 	if count > 1 {
 		res.Status = http.StatusBadRequest
 		res.Message = "Tanngal tersebut sudah ditambahkan sebagai hari libur "
 		return res
 	}
 
+	offday.Date = date
 	if result := db.Create(&offday); result.Error != nil {
 		log.Print("error OffdayAddNew")
 		log.Print(result.Error)
 
-		res.Status = http.StatusInternalServerError
-		res.Message = "error OffdayAddNew"
+		res.Status = http.StatusBadRequest
+		res.Message = "Tanngal tersebut sudah ditambahkan sebagai hari libur "
 		return res
 	}
 

@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"absen-go/app/models"
-	"fmt"
 	"log"
 	"time"
 
@@ -10,7 +9,6 @@ import (
 )
 
 func OffdayNew(c *fiber.Ctx) error {
-	var offday models.Offday
 	var res models.Response
 
 	p := struct {
@@ -35,11 +33,7 @@ func OffdayNew(c *fiber.Ctx) error {
 		return c.Status(400).JSON(res)
 	}
 
-	fmt.Println(t.Date())
-
-	offday.Date = t
-
-	result := models.OffdayAddNew(&offday)
+	result := models.OffdayAddNew(t)
 	return c.Status(result.Status).JSON(result)
 }
 
