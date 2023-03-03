@@ -54,7 +54,7 @@ func OffdayFetchAll() (Response, error) {
 
 	db := config.GetDBInstance()
 
-	if result := db.Find(&offdays); result.Error != nil {
+	if result := db.Order("date ASC").Find(&offdays); result.Error != nil {
 		log.Print("error OffdayFetchAll")
 		log.Print(result.Error)
 
@@ -66,6 +66,25 @@ func OffdayFetchAll() (Response, error) {
 	res.Status = http.StatusOK
 	res.Message = "ok"
 	res.Data = offdays
+
+	return res, nil
+}
+
+func OffdayHardDelete(offday_id string) (Response, error) {
+	var res Response
+	var offday Offday
+
+	db := config.GetDBInstance()
+	result := db.Unscoped().Delete(&offday, offday_id)
+
+	if result.Error != nil {
+		res.Status = http.StatusBadRequest
+		res.Message = "Error"
+
+		return res, result.Error
+	}
+	res.Status = http.StatusOK
+	res.Message = "ok"
 
 	return res, nil
 }

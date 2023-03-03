@@ -41,3 +41,9 @@ func OffdatFechAll(c *fiber.Ctx) error {
 	result, _ := models.OffdayFetchAll()
 	return c.Status(result.Status).JSON(result)
 }
+
+func OffdayHardDelete(c *fiber.Ctx) error {
+	result, _ := models.OffdayHardDelete(c.Params("id"))
+
+	return c.Status(result.Status).JSON(result)
+}

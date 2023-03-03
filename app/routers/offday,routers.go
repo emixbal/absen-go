@@ -14,4 +14,5 @@ func Offday(app *fiber.App) {
 
 	IsSuperadmin.Get("/", controllers.OffdatFechAll)
 	IsSuperadmin.Post("/", controllers.OffdayNew)
+	IsSuperadmin.Delete("/:id", controllers.OffdayHardDelete)
 }
