@@ -78,12 +78,12 @@ func RecapMemberAttendancePerMember(member_id, year_month string) Response {
 
 	for d := start_month; !d.After(end_month); d = d.AddDate(0, 0, 1) {
 		if sliceOfStringContains(routine_offdays, d.Weekday().String()) { // check apakah hari d adalah hari libur mingguan?
+			attendance.IsOffday = true
 			fmt.Println("=====bukan hari masuk=====")
-			// sengaja dibuat gini, buat logging
 		} else {
 			if sliceOfTimeContainDate(offdays, d) {
+				attendance.IsOffday = true
 				fmt.Println("=====hari libur=====")
-				// sengaja dibuat gini, buat logging
 			} else {
 				cam = ClassAttendanceMember{}
 				result := db.
@@ -91,15 +91,15 @@ func RecapMemberAttendancePerMember(member_id, year_month string) Response {
 					Where("arrive > ? AND arrive < ?", d, d.Add(24*time.Hour)).
 					First(&cam)
 
-				attendance.Date = d
-
 				if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 					attendance.IsAttended = false
+					attendance.IsOffday = false
 					attendance.Arrive = nil
 					attendance.Leave = nil
 					total_absence++
 				} else {
 					attendance.IsAttended = true
+					attendance.IsOffday = false
 					attendance.Arrive = cam.Arrive
 					if cam.Leave.Before(cam.Arrive) {
 						attendance.Leave = nil
@@ -108,10 +108,10 @@ func RecapMemberAttendancePerMember(member_id, year_month string) Response {
 					}
 				}
 				total_day++
-				arr_attendances = append(arr_attendances, attendance)
 			}
-
 		}
+		attendance.Date = d
+		arr_attendances = append(arr_attendances, attendance)
 	}
 
 	var sick_remark_result []RemarkResult
@@ -132,9 +132,12 @@ func RecapMemberAttendancePerMember(member_id, year_month string) Response {
 
 	attendance_summary.TotalAbsence = total_absence
 	attendance_summary.TotalDay = total_day
-	attendance_summary.TotalSickRemark = sick_remark_result
-	attendance_summary.TotalOtherkRemark = other_remark_result
+	attendance_summary.SickRemark = sick_remark_result
+	attendance_summary.TotalSick = len(sick_remark_result)
+	attendance_summary.TotalOtherkRemark = len(other_remark_result)
+	attendance_summary.OtherkRemark = other_remark_result
 	attendance_summary.TotalAbsenceWithRemark = len(sick_remark_result) + len(other_remark_result)
+	attendance_summary.TotalAbsenceNoRemark = int(total_absence) - attendance_summary.TotalAbsenceWithRemark
 
 	member_result.ID = member.ID
 	member_result.Name = member.Name

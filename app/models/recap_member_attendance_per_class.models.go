@@ -15,14 +15,18 @@ type MemberAttendanceResult struct {
 	Arrive     interface{} `json:"arrive"`
 	Leave      interface{} `json:"leave"`
 	IsAttended bool        `json:"is_attended"`
+	IsOffday   bool        `json:"is_offday"`
 }
 
 type AttendanceSummary struct {
 	TotalDay               uint        `json:"total_day"`
 	TotalAbsence           uint        `json:"total_absence"`
 	TotalAbsenceWithRemark int         `json:"total_absence_with_remark"`
-	TotalSickRemark        interface{} `json:"sick_remarks"`
-	TotalOtherkRemark      interface{} `json:"other_remarks"`
+	TotalSick              int         `json:"total_sick"`
+	TotalOtherkRemark      int         `json:"total_other_remarks"`
+	TotalAbsenceNoRemark   int         `json:"total_absence_no_remark"`
+	SickRemark             interface{} `json:"sick_remarks"`
+	OtherkRemark           interface{} `json:"other_remarks"`
 }
 
 type MemberResult struct {
