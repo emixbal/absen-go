@@ -45,3 +45,25 @@ func OffdayAddNew(offday *Offday) Response {
 
 	return res
 }
+
+func OffdayFetchAll() (Response, error) {
+	var offdays []Offday
+	var res Response
+
+	db := config.GetDBInstance()
+
+	if result := db.Find(&offdays); result.Error != nil {
+		log.Print("error OffdayFetchAll")
+		log.Print(result.Error)
+
+		res.Status = http.StatusInternalServerError
+		res.Message = "error fetchin records"
+		return res, result.Error
+	}
+
+	res.Status = http.StatusOK
+	res.Message = "ok"
+	res.Data = offdays
+
+	return res, nil
+}

@@ -8,8 +8,10 @@ import (
 )
 
 func Offday(app *fiber.App) {
-	r := app.Group("/offdays", middlewares.IsAuthenticated)
+	r := app.Group("/offday", middlewares.IsAuthenticated)
 
 	IsSuperadmin := r.Group("/", middlewares.IsSuperadmin)
+
+	IsSuperadmin.Get("/", controllers.OffdatFechAll)
 	IsSuperadmin.Post("/", controllers.OffdayNew)
 }

@@ -42,3 +42,8 @@ func OffdayNew(c *fiber.Ctx) error {
 	result := models.OffdayAddNew(&offday)
 	return c.Status(result.Status).JSON(result)
 }
+
+func OffdatFechAll(c *fiber.Ctx) error {
+	result, _ := models.OffdayFetchAll()
+	return c.Status(result.Status).JSON(result)
+}
