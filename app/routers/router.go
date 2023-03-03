@@ -21,6 +21,7 @@ func Init(app *fiber.App) {
 	RecapMemberAttendance(app)
 	Class(app)
 	Reset(app)
+	Offday(app)
 
 	Dev(app)
 }
