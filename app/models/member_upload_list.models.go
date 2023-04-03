@@ -4,7 +4,6 @@ import (
 	"absen-go/config"
 	"encoding/csv"
 	"errors"
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -71,8 +70,8 @@ func MembersUploadList(class_id string) Response {
 		return res
 	}
 
+	var codeMap []string
 	for index, val := range records {
-		fmt.Println(index)
 		if index != 0 {
 			if len(val) < 4 {
 				res.Status = 400
@@ -102,6 +101,17 @@ func MembersUploadList(class_id string) Response {
 			member.ClassID = int_class_id
 
 			members = append(members, member)
+
+			// cek apakah nomor kartu sudah ada pada map
+			for _, value := range codeMap {
+				if value == member.Code {
+					res.Status = 400
+					res.Message = "Nomor kartu " + value + " duplikat"
+					return res
+				}
+			}
+			// tambahkan nomor kartu pada map
+			codeMap = append(codeMap, member.Code)
 		}
 	}
 
