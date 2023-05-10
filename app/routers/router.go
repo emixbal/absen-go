@@ -23,6 +23,7 @@ func Init(app *fiber.App) {
 	Class(app)
 	Reset(app)
 	Offday(app)
+	OffSiteAssignment(app)
 
 	Dev(app)
 }

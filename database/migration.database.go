@@ -17,6 +17,7 @@ func InitMigration(db *gorm.DB) {
 		&models.Member{},
 		// &models.ClassAttendance{},
 		&models.ClassAttendanceMember{},
+		&models.OffSiteAssignmentMember{},
 		&models.Offday{},
 		&models.RoutineOffday{},
 		&models.Remark{},
