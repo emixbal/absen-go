@@ -88,6 +88,7 @@ func ClassAttendanceMemberArrive(code string) (Response, error) {
 			res.Data = fiber.Map{
 				"member_name":  member.Name,
 				"nisn":         member.NISN,
+				"nbm":          member.NBM,
 				"class":        member.Class.Name,
 				"time_arrival": cam.Arrive.Format("15:04:05"),
 			}
@@ -146,6 +147,7 @@ func ClassAttendanceMemberLeave(code string) (Response, error) {
 	res.Data = fiber.Map{
 		"member_name":  member.Name,
 		"nisn":         member.NISN,
+		"nbm":          member.NBM,
 		"class":        member.Class.Name,
 		"time_leaving": cam.Leave.Format("15:04:05"),
 	}
