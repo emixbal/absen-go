@@ -101,7 +101,6 @@ func ClassAttendanceMemberArrive(code string) (Response, error) {
 	res.Status = http.StatusBadRequest
 	res.Message = "sudah absen"
 	return res, nil
-
 }
 
 func ClassAttendanceMemberLeave(code string) (Response, error) {
