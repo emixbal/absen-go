@@ -13,7 +13,6 @@ import (
 
 func ClassAttendanceRemarking(c *fiber.Ctx) error {
 	var res models.Response
-	var car models.ClassAttendanceRemark
 
 	p := new(requests.AddClassAttendanceRemark)
 	if err := c.BodyParser(p); err != nil {
@@ -49,12 +48,11 @@ func ClassAttendanceRemarking(c *fiber.Ctx) error {
 		return c.Status(400).JSON(res)
 	}
 
-	car.Date = t
-	car.Member.Code = p.Code
-	car.Text = p.Remark
-	car.RemarkTypeID = p.RemarkTypeID
+	log.Println("===>")
+	log.Println(p.IsSick)
+	log.Println("===>")
 
-	result := models.ClassAttendanceRemarking(p.Code, p.RemarkTypeID, p.Remark, t)
+	result := models.ClassAttendanceRemarking(p.Code, p.IsSick, p.Description, t)
 
 	return c.Status(result.Status).JSON(result)
 }

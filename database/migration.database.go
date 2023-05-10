@@ -17,8 +17,6 @@ func InitMigration(db *gorm.DB) {
 		&models.Member{},
 		// &models.ClassAttendance{},
 		&models.ClassAttendanceMember{},
-		&models.ClassAttendanceRemarkType{},
-		&models.ClassAttendanceRemark{},
 		&models.Offday{},
 		&models.RoutineOffday{},
 		&models.Remark{},
@@ -32,5 +30,4 @@ func InitMigration(db *gorm.DB) {
 	// init seeding
 	SeederRole(db)
 	SeederUser(db)
-	RemarkType(db)
 }
