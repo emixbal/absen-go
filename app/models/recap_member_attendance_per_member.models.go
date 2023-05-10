@@ -144,6 +144,7 @@ func RecapMemberAttendancePerMember(member_id, year_month string) Response {
 	member_result.NIS = member.NIS
 	member_result.NISN = member.NISN
 	member_result.NBM = member.NBM
+	member_result.Code = member.Code
 	member_result.ClassName = member.Class.Name
 	member_result.Attendances = arr_attendances
 	member_result.AttendanceSummary = attendance_summary
