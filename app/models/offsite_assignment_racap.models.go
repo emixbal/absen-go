@@ -35,7 +35,7 @@ func OffSiteAssignmentRecapAll(sort_by, sort_type string, start_date, end_date t
 		q.Order("c.id " + sort_type)
 	}
 
-	if sort_by == "date" {
+	if sort_by == "departure" {
 		q.Order("osam.departure " + sort_type)
 	}
 

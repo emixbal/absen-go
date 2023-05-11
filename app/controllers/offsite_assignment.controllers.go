@@ -81,11 +81,11 @@ func OffSiteAssignmentRecapAll(c *fiber.Ctx) error {
 	}
 
 	if c.Query("sort_by") != "" {
-		if c.Query("sort_by") == "class" || c.Query("sort_by") == "date" || c.Query("sort_by") == "name" {
+		if c.Query("sort_by") == "class" || c.Query("sort_by") == "departure" || c.Query("sort_by") == "name" {
 			sort_by = c.Query("sort_by")
 		} else {
 			res.Status = 400
-			res.Message = "sort_by accepted: (class|date|name)"
+			res.Message = "sort_by accepted: (class|departure|name)"
 			return c.Status(400).JSON(res)
 		}
 	}
@@ -120,12 +120,6 @@ func OffSiteAssignmentRecapAll(c *fiber.Ctx) error {
 
 		res.Status = 400
 		res.Message = "parse date error, check your date format. Accepted: MM/DD/YYYY"
-		return c.Status(400).JSON(res)
-	}
-
-	if end_date.After(start_date) {
-		res.Status = 400
-		res.Message = "start_date harus lebih dahulu dari end_date"
 		return c.Status(400).JSON(res)
 	}
 
